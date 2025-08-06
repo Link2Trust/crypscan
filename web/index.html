@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cryptoscan Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script defer src="js/dashboard.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    h1 {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      margin-top: 2rem;
+    }
+    .chart-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .chart-container {
+      flex: 1 1 45%;
+      min-width: 300px;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+    table {
+      margin-top: 1rem;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.4rem;
+      text-align: left;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Cryptoscan Report</h1>
+
+  <h2>📦 Crypto Libraries</h2>
+  <div class="chart-group">
+    <div class="chart-container">
+      <canvas id="libraryChartBar"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="libraryChartPie"></canvas>
+    </div>
+  </div>
+
+  <h2>🗂️ File Types (Library Usage)</h2>
+  <div class="chart-group">
+    <div class="chart-container">
+      <canvas id="fileTypeChartBar"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="fileTypeChartPie"></canvas>
+    </div>
+  </div>
+
+  <h2>🔎 Artefacts</h2>
+  <div id="artefactSection">
+    <table id="artefactTable">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Keyword</th>
+          <th>Context</th>
+          <th>File</th>
+          <th>Line</th>
+        </tr>
+      </thead>
+      <tbody id="artefactBody"></tbody>
+    </table>
+  </div>
+</body>
+</html>

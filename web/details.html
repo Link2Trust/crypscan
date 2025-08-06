@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypto Usage Details</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    code {
+      white-space: pre-wrap;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      font-weight: bold;
+    }
+    a.vscode-link {
+      color: #0074cc;
+      text-decoration: none;
+    }
+    a.vscode-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Crypto Usage Details</h1>
+  <p id="filterInfo">Loading...</p>
+
+  <table id="resultsTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>File (click to open in VS Code)</th>
+        <th>Line</th>
+        <th>Keyword</th>
+        <th>Context</th>
+        <th>Version</th>
+        <th>Snippet</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <a href="index.html" class="back-link">⬅ Back to Dashboard</a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get('filter');
+    const filterInfo = document.getElementById('filterInfo');
+    const table = document.getElementById('resultsTable');
+    const tbody = document.getElementById('tableBody');
+
+    const REDACT_PREFIX = "/Users/johankestens/Sandbox/xst-web/web-crypto-service";
+    const DISPLAY_PREFIX = "<path-to-code-scanned>";
+    const DISPLAY_FILENAME = "<scanned-file>";
+
+    if (!filter) {
+      filterInfo.textContent = "❌ No filter provided in URL.";
+    } else {
+      filterInfo.textContent = `Showing results for: ${filter}`;
+
+      fetch('data/findings.json')
+        .then(res => res.json())
+        .then(data => {
+          const matches = data.filter(entry => {
+            const keywordWithVersion = entry.version
+              ? `${entry.keyword} (v${entry.version})`
+              : entry.keyword;
+            const ext = entry.file.split('.').pop().toLowerCase();
+            return keywordWithVersion === filter || ext === filter.toLowerCase();
+          });
+
+          if (matches.length === 0) {
+            filterInfo.textContent += " (no matches found)";
+            return;
+          }
+
+          table.style.display = "table";
+          matches.forEach(entry => {
+            // Store the original file for VSCode link
+            const originalPath = entry.file;
+            const redactedPath = originalPath
+              .replace(REDACT_PREFIX, DISPLAY_PREFIX)
+              .replace(/[^/]+$/, DISPLAY_FILENAME);
+
+            const vscodeUrl = `vscode://file${originalPath}:${entry.line_number}`;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>
+                <a href="${vscodeUrl}" class="vscode-link" target="_blank">
+                  ${redactedPath}
+                </a>
+              </td>
+              <td>${entry.line_number}</td>
+              <td>${entry.keyword}</td>
+              <td>${entry.context}</td>
+              <td>${entry.version ?? ''}</td>
+              <td><code>${entry.line_content}</code></td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(err => {
+          filterInfo.textContent = "❌ Error loading findings.json";
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html>
