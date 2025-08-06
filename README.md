@@ -125,7 +125,8 @@ Then open your browser at:
 
 ### Example Details page
 
-<img width="1931" height="542" alt="image" src="https://github.com/user-attachments/assets/eb031ce0-8baf-45e8-8f1e-2b68c635b31d" />
+<img width="1900" height="494" alt="image" src="https://github.com/user-attachments/assets/c48d5f35-85de-4a36-b9b0-4059086ee5ea" />
+
 
 ---
 
