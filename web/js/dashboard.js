@@ -1,8 +1,20 @@
 Chart.register(ChartDataLabels);
 
-// 🎨 Deterministic color generator (based on label index)
+// 🎨 Deterministic color generator
 function generateColors(labels) {
   return labels.map((_, i) => `hsl(${(i * 67) % 360}, 65%, 60%)`);
+}
+
+// 🖱️ Chart click handler
+function setupClickHandler(chart, labels) {
+  chart.canvas.ondblclick = function (evt) {
+    const point = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true)[0];
+    if (point) {
+      const label = labels[point.index];
+      const filter = encodeURIComponent(label.split(" ")[0]);
+      window.open(`details.html?filter=${filter}`, "_blank");
+    }
+  };
 }
 
 fetch("data/findings.json")
@@ -19,9 +31,9 @@ fetch("data/findings.json")
 
     const libLabels = Object.keys(libCounts);
     const libData = Object.values(libCounts);
-    const libColors = generateColors(libLabels); // 🔁 used in both bar + pie
+    const libColors = generateColors(libLabels);
 
-    new Chart(document.getElementById("libraryChartBar"), {
+    const libBarChart = new Chart(document.getElementById("libraryChartBar"), {
       type: "bar",
       data: {
         labels: libLabels,
@@ -53,8 +65,9 @@ fetch("data/findings.json")
         }
       }
     });
+    setupClickHandler(libBarChart, libLabels);
 
-    new Chart(document.getElementById("libraryChartPie"), {
+    const libPieChart = new Chart(document.getElementById("libraryChartPie"), {
       type: "pie",
       data: {
         labels: libLabels,
@@ -68,11 +81,12 @@ fetch("data/findings.json")
           legend: { position: 'bottom' },
           datalabels: {
             color: "#000",
-            formatter: val => val // ✅ numbers only
+            formatter: val => val
           }
         }
       }
     });
+    setupClickHandler(libPieChart, libLabels);
 
     const fileTypeCounts = {};
     libraryFindings.forEach(f => {
@@ -82,9 +96,9 @@ fetch("data/findings.json")
 
     const typeLabels = Object.keys(fileTypeCounts);
     const typeData = Object.values(fileTypeCounts);
-    const typeColors = generateColors(typeLabels); // 🔁 reused
+    const typeColors = generateColors(typeLabels);
 
-    new Chart(document.getElementById("fileTypeChartBar"), {
+    const typeBarChart = new Chart(document.getElementById("fileTypeChartBar"), {
       type: "bar",
       data: {
         labels: typeLabels,
@@ -115,8 +129,9 @@ fetch("data/findings.json")
         }
       }
     });
+    setupClickHandler(typeBarChart, typeLabels);
 
-    new Chart(document.getElementById("fileTypeChartPie"), {
+    const typePieChart = new Chart(document.getElementById("fileTypeChartPie"), {
       type: "pie",
       data: {
         labels: typeLabels,
@@ -135,6 +150,7 @@ fetch("data/findings.json")
         }
       }
     });
+    setupClickHandler(typePieChart, typeLabels);
 
     const tbody = document.getElementById("artefactBody");
     artefacts.forEach(f => {

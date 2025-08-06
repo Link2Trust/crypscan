@@ -9,7 +9,7 @@ use crate::utils::file_utils::detect_mime_type;
 use crate::utils::report::{write_report_to_json, Finding};
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
 
 fn is_supported_code_file(path: &Path) -> bool {
