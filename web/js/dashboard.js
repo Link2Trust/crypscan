@@ -21,7 +21,17 @@ fetch("data/findings.json")
   .then(res => res.json())
   .then(data => {
     const libraryFindings = data.filter(f => f.category === "library");
-    const artefacts = data.filter(f => f.category !== "library");
+    const secretFindings = data.filter(f => f.category === "secret");
+    const artefacts = data.filter(f => f.category !== "library" && f.category !== "secret");
+    
+    // Update summary
+    const summaryText = document.getElementById("summaryText");
+    summaryText.innerHTML = `
+      📚 <strong>${libraryFindings.length}</strong> crypto library usages found<br>
+      🚨 <strong>${secretFindings.length}</strong> potential hardcoded secrets found<br>
+      🔎 <strong>${artefacts.length}</strong> other crypto artifacts found<br>
+      📁 Total files scanned: <strong>${new Set(data.map(f => f.file)).size}</strong>
+    `;
 
     const libCounts = {};
     libraryFindings.forEach(f => {
@@ -151,6 +161,78 @@ fetch("data/findings.json")
       }
     });
     setupClickHandler(typePieChart, typeLabels);
+
+    // Secrets charts
+    const secretCounts = {};
+    secretFindings.forEach(f => {
+      secretCounts[f.keyword] = (secretCounts[f.keyword] || 0) + 1;
+    });
+
+    const secretLabels = Object.keys(secretCounts);
+    const secretData = Object.values(secretCounts);
+    const secretColors = secretLabels.map((_, i) => `hsl(${(i * 67) % 360}, 70%, 55%)`);
+
+    if (secretLabels.length > 0) {
+      const secretBarChart = new Chart(document.getElementById("secretsChartBar"), {
+        type: "bar",
+        data: {
+          labels: secretLabels,
+          datasets: [{
+            label: "Secret Types",
+            data: secretData,
+            backgroundColor: secretColors
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              formatter: Math.round
+            }
+          },
+          scales: {
+            x: {
+              ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 },
+              title: { display: true, text: "Secret Type" }
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Count" }
+            }
+          }
+        }
+      });
+      setupClickHandler(secretBarChart, secretLabels);
+
+      const secretPieChart = new Chart(document.getElementById("secretsChartPie"), {
+        type: "pie",
+        data: {
+          labels: secretLabels,
+          datasets: [{
+            data: secretData,
+            backgroundColor: secretColors
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' },
+            datalabels: {
+              color: "#fff",
+              formatter: val => val
+            }
+          }
+        }
+      });
+      setupClickHandler(secretPieChart, secretLabels);
+    } else {
+      // Show "No secrets found" message
+      document.getElementById("secretsChartBar").parentElement.innerHTML = "<p style='text-align: center; padding: 2rem;'>✅ No hardcoded secrets detected!</p>";
+      document.getElementById("secretsChartPie").parentElement.innerHTML = "<p style='text-align: center; padding: 2rem;'>🔒 Great security posture!</p>";
+    }
+
 
     const tbody = document.getElementById("artefactBody");
     artefacts.forEach(f => {
