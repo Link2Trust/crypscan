@@ -38,8 +38,8 @@ CryptoScanner detects **libraries, keystore files, and key management activity**
 ### Clone the repository
 
 ```bash
-git clone https://github.com/Link2Trust/crypto-scanner.git
-cd crypto-scanner
+git clone https://github.com/Link2Trust/crypsca.git
+cd crypscan
 ```
 
 ### Build the scanner
