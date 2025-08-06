@@ -2,6 +2,7 @@ pub mod code;
 pub mod binary;
 pub mod network;
 pub mod artefacts;
+pub mod secrets;
 
 use crate::config::Config;
 use crate::scanner::artefacts::{scan_keystore_file, scan_key_commands};
@@ -26,6 +27,27 @@ fn is_supported_code_file(path: &Path) -> bool {
             )
         }
         None => false,
+    }
+}
+
+fn is_config_file(path: &Path) -> bool {
+    // Check by extension
+    if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+        let ext = ext.to_lowercase();
+        if matches!(ext.as_str(), "env" | "yml" | "yaml" | "json" | "toml" | "ini" | "conf" | "config" | "properties") {
+            return true;
+        }
+    }
+    
+    // Check by filename
+    if let Some(filename) = path.file_name().and_then(|f| f.to_str()) {
+        let filename = filename.to_lowercase();
+        matches!(filename.as_str(), 
+            ".env" | ".env.local" | ".env.development" | ".env.production" | ".env.test" |
+            "config" | "secrets" | "credentials" | "settings"
+        )
+    } else {
+        false
     }
 }
 
@@ -89,6 +111,16 @@ pub fn scan_directory(config: &Config) {
             if is_supported_code_file(path) {
                 results.extend(crate::scanner::code::scan_file(path));
                 results.extend(scan_key_commands(path));
+                
+                // Scan for secrets if enabled
+                if config.scan_secrets && !config.skip_secrets {
+                    results.extend(crate::scanner::secrets::scan_file(path));
+                }
+            }
+
+            // Scan config files for secrets (but not for crypto libraries) if enabled
+            if is_config_file(path) && config.scan_secrets && !config.skip_secrets {
+                results.extend(crate::scanner::secrets::scan_file(path));
             }
 
             pb.inc(1);

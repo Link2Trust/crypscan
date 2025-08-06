@@ -14,6 +14,7 @@ CryptoScanner detects **libraries, keystore files, and key management activity**
 - 🧠 **Detects cryptographic libraries** (e.g. `openssl`, `crypto`, `ring`, `bouncycastle`)
 - 🗂️ **Finds keystore artefacts** by file extension (`.pem`, `.jks`, `.p12`, etc.)
 - 💻 **Scans for key management commands** in scripts (e.g. `openssl genpkey`, `gpg --import`)
+- 🚨 **Detects hardcoded secrets** (API keys, tokens, passwords, database URLs, private keys)
 - ⚡ **Parallel scanning** with `rayon`
 - 🧠 Optional **MIME-based filtering** (`--use-mime-filter`)
 - 📁 Skips known non-code folders and files (`node_modules`, `.css`, `build`, etc.)
@@ -71,6 +72,13 @@ This command will:
 cargo run --release -- --path ./my_project --use-mime-filter
 ```
 - Enable MIME-type detection to skip e.g. logs, docs
+
+### Skip secrets scanning
+
+```bash
+cargo run --release -- --path ./my_project --skip-secrets
+```
+- Disable hardcoded secrets detection (enabled by default)
 
 ### Example output (JSON)
 
@@ -138,18 +146,22 @@ crypto-scanner/
 │   ├── main.rs              # CLI entry point
 │   ├── config.rs            # Config & CLI flags
 │   ├── scanner/
-│   │   ├── mod.rs
+│   │   ├── mod.rs           # Scanner module coordination
 │   │   ├── code.rs          # Library usage scanner
+│   │   ├── secrets.rs       # Hardcoded secrets detector
 │   │   ├── artefacts.rs     # Keystore + CLI command discovery
+│   │   ├── binary.rs        # Binary file analysis
+│   │   └── network.rs       # Network-related scanning
 │   └── utils/
-│       ├── file_utils.rs
-│       ├── report.rs
-├── output/                  # Optional export dir
+│       ├── file_utils.rs    # File handling utilities
+│       ├── report.rs        # JSON report generation
+│       ├── lang_ident.rs    # Language identification
+│       └── mod.rs           # Utilities module
 ├── web/
 │   ├── index.html           # Dashboard entry
-│   ├── dashboard.js         # Chart.js logic
+│   ├── js/dashboard.js      # Chart.js visualization logic
 │   ├── details.html         # Filtered VS Code links
-│   └── data/findings.json   # Scanner output
+│   └── data/findings.json   # Scanner output (generated)
 ├── Cargo.toml
 └── README.md
 ```
@@ -170,12 +182,30 @@ crypto-scanner/
 | `indicatif`        | Progress bar for scanning            |
 ---
 
+
+## 🔍 Hardcoded Secrets Detection
+
+The tool automatically detects various types of hardcoded secrets:
+
+- **AWS credentials** (Access Keys, Secret Keys)
+- **GitHub tokens** (Personal, OAuth, Server tokens)
+- **API keys** (Google, Slack, Discord, SendGrid, etc.)
+- **Database connection strings** (MongoDB, MySQL, PostgreSQL)
+- **JWT tokens**
+- **Private keys** (RSA, SSH, EC, DSA)
+- **Generic secrets** (passwords, tokens, high-entropy strings)
+
+Secrets are detected in:
+- Source code files (`.py`, `.js`, `.rs`, `.java`, etc.)
+- Configuration files (`.env`, `.yml`, `.json`, `.toml`, etc.)
+- Shell scripts and command files
+
 ## ✅ TODO / Roadmap
 
 - [ ] Support multi-line crypto expression parsing
-- [ ] Add support for secrets (e.g. hardcoded keys)
-- [ ] WASM-based scanner integration
 - [ ] Remote scanning via SSH
+- [ ] Add entropy-based secret detection
+- [ ] Integration with CI/CD pipelines
 
 ---
 
