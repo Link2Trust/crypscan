@@ -120,7 +120,8 @@ Then open your browser at:
 
 ### Example Dashboard
 
-<img width="786" height="917" alt="image" src="https://github.com/user-attachments/assets/daff0f68-9249-4d55-bf69-93eadc067e2c" />
+<img width="825" height="1076" alt="image" src="https://github.com/user-attachments/assets/83f371ae-4309-4bb6-a61f-7bf3f85c2964" />
+
 
 ### Example Details page
 
