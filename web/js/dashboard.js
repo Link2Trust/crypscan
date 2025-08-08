@@ -233,7 +233,6 @@ fetch("data/findings.json")
       document.getElementById("secretsChartPie").parentElement.innerHTML = "<p style='text-align: center; padding: 2rem;'>🔒 Great security posture!</p>";
     }
 
-
     const tbody = document.getElementById("artefactBody");
     artefacts.forEach(f => {
       const row = document.createElement("tr");

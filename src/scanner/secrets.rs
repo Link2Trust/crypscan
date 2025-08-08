@@ -18,7 +18,7 @@ fn get_secret_patterns() -> HashMap<&'static str, (&'static str, &'static str, u
     
     // AWS patterns
     patterns.insert(r"AKIA[0-9A-Z]{16}", ("AWS Access Key", "AWS Access Key ID", 3));
-    patterns.insert(r#"(?i)aws[_-]?secret[_-]?access[_-]?key\s*[:=]\s*['"]([a-zA-Z0-9/+=]{40})['"]"#,("AWS Secret", "AWS Secret Access Key", 3)    );    
+    patterns.insert(r#"(?i)aws[_-]?secret[_-]?access[_-]?key\s*[:=]\s*['"]([a-zA-Z0-9/+=]{40})['"]"#, ("AWS Secret", "AWS Secret Access Key", 3));
     
     // GitHub patterns
     patterns.insert(r"ghp_[a-zA-Z0-9]{36}", ("GitHub Token", "GitHub Personal Access Token", 3));
@@ -51,13 +51,25 @@ fn get_secret_patterns() -> HashMap<&'static str, (&'static str, &'static str, u
     patterns.insert(r"-----BEGIN\s+DSA\s+PRIVATE KEY-----", ("DSA Private Key", "DSA Private Key", 3));
     
     // Crypto wallet private keys (basic patterns)
-    patterns.insert(r#"(?i)(private[_-]?key|privkey)\s*[:=]\s*['"]([a-fA-F0-9]{64})['"]"#,("Crypto Private Key", "Cryptocurrency private key", 3));
+    patterns.insert(r#"(?i)(private[_-]?key|privkey)\s*[:=]\s*['"]([a-fA-F0-9]{64})['"]"#, ("Crypto Private Key", "Cryptocurrency private key", 3));
+    
+    // JSON field patterns for public/private keys
+    patterns.insert(r#"(?i)['"]\w*_private_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Private Key", "Private key in JSON field ending with _private_key", 3));
+    patterns.insert(r#"(?i)['"]\w*_public_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Public Key", "Public key in JSON field ending with _public_key", 2));
+    patterns.insert(r#"(?i)['"]private_key_\w*['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Private Key", "Private key in JSON field starting with private_key_", 3));
+    patterns.insert(r#"(?i)['"]public_key_\w*['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Public Key", "Public key in JSON field starting with public_key_", 2));
+    
+    // Additional patterns for unquoted JSON keys (common in some configs)
+    patterns.insert(r#"(?i)\w*_private_key\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Private Key", "Private key in unquoted JSON field ending with _private_key", 3));
+    patterns.insert(r#"(?i)\w*_public_key\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Public Key", "Public key in unquoted JSON field ending with _public_key", 2));
+    patterns.insert(r#"(?i)private_key_\w*\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Private Key", "Private key in unquoted JSON field starting with private_key_", 3));
+    patterns.insert(r#"(?i)public_key_\w*\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#, ("JSON Public Key", "Public key in unquoted JSON field starting with public_key_", 2));
     
     // Azure patterns
-    patterns.insert(r#"(?i)azure[_-]?client[_-]?secret\s*[:=]\s*['"]([a-zA-Z0-9~\._-]{34})['"]"#,("Azure Secret", "Azure Client Secret", 3));
+    patterns.insert(r#"(?i)azure[_-]?client[_-]?secret\s*[:=]\s*['"]([a-zA-Z0-9~\._-]{34})['"]"#, ("Azure Secret", "Azure Client Secret", 3));
     
     // Heroku patterns
-    patterns.insert(r#"(?i)heroku[_-]?api[_-]?key\s*[:=]\s*['"]([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})['"]"#,("Heroku API Key", "Heroku API Key", 3));
+    patterns.insert(r#"(?i)heroku[_-]?api[_-]?key\s*[:=]\s*['"]([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})['"]"#, ("Heroku API Key", "Heroku API Key", 3));
     
     // Mailgun patterns
     patterns.insert(r"key-[a-fA-F0-9]{32}", ("Mailgun Key", "Mailgun API Key", 2));
@@ -73,7 +85,7 @@ fn get_secret_patterns() -> HashMap<&'static str, (&'static str, &'static str, u
     patterns.insert(r"EAA[a-zA-Z0-9]{90,}", ("Facebook Token", "Facebook Access Token", 2));
     
     // Generic high-entropy strings that might be secrets
-    patterns.insert(r#"(?i)(token|key|secret|password|passwd|auth)\s*[:=]\s*['"]([a-zA-Z0-9+/=]{32,})['"]"#,("High Entropy String", "Potential secret with high entropy", 1));
+    patterns.insert(r#"(?i)(token|key|secret|password|passwd|auth)\s*[:=]\s*['"]([a-zA-Z0-9+/=]{32,})['"]"#, ("High Entropy String", "Potential secret with high entropy", 1));
 
     patterns
 }
@@ -242,5 +254,25 @@ aws_secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
         assert!(is_comment_line("# Python comment"));
         assert!(is_comment_line("/* C-style comment"));
         assert!(!is_comment_line("let api_key = \"real_key\";"));
+    }
+
+    #[test]
+    fn test_json_key_patterns() {
+        let patterns = get_secret_patterns();
+        
+        // Test that we have the new JSON key patterns
+        assert!(patterns.contains_key(r#"(?i)['"]\w*_private_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#));
+        assert!(patterns.contains_key(r#"(?i)['"]\w*_public_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#));
+        assert!(patterns.contains_key(r#"(?i)\w*_private_key\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#));
+        assert!(patterns.contains_key(r#"(?i)\w*_public_key\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#));
+        
+        // Verify the pattern metadata
+        let private_key_pattern = patterns.get(r#"(?i)['"]\w*_private_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#).unwrap();
+        assert_eq!(private_key_pattern.0, "JSON Private Key");
+        assert_eq!(private_key_pattern.2, 3); // severity level
+        
+        let public_key_pattern = patterns.get(r#"(?i)['"]\w*_public_key['"]\s*:\s*['"]([a-zA-Z0-9+/=\-_\.]{64,})['"]"#).unwrap();
+        assert_eq!(public_key_pattern.0, "JSON Public Key");
+        assert_eq!(public_key_pattern.2, 2); // severity level
     }
 }

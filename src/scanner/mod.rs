@@ -117,7 +117,7 @@ pub fn scan_directory(config: &Config) {
                     results.extend(crate::scanner::secrets::scan_file(path));
                 }
             }
-
+            
             // Scan config files for secrets (but not for crypto libraries) if enabled
             if is_config_file(path) && config.scan_secrets && !config.skip_secrets {
                 results.extend(crate::scanner::secrets::scan_file(path));
