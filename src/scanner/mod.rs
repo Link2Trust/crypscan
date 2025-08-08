@@ -69,6 +69,24 @@ fn is_not_in_ignored_folder(entry: &DirEntry) -> bool {
     true
 }
 
+fn is_scannable_file(path: &Path) -> bool {
+    // Check if it's a supported code file, config file, or potential keystore file
+    is_supported_code_file(path) || is_config_file(path) || has_keystore_extension(path)
+}
+
+fn has_keystore_extension(path: &Path) -> bool {
+    const KEYSTORE_EXTENSIONS: &[&str] = &[
+        "pem", "crt", "cer", "key", "jks", "p12", "pfx", "asc", "gpg", "der"
+    ];
+    
+    if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+        let ext = ext.to_lowercase();
+        KEYSTORE_EXTENSIONS.iter().any(|&keystore_ext| ext == keystore_ext)
+    } else {
+        false
+    }
+}
+
 pub fn scan_directory(config: &Config) {
     let skip_mime_prefixes = vec!["text/markdown", "text/plain", "application/log"];
 
@@ -77,6 +95,7 @@ pub fn scan_directory(config: &Config) {
         .filter_map(Result::ok)
         .filter(|e| e.path().is_file())
         .filter(is_not_in_ignored_folder)
+        .filter(|e| is_scannable_file(e.path()))
         .collect();
 
     let pb = ProgressBar::new(entries.len() as u64);
