@@ -1,0 +1,175 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "serialNumber": "urn:uuid:1cf32856-5e76-4bd5-acf7-3cbfa9d78fd6",
+  "metadata": {
+    "timestamp": "2025-08-22T13:27:24.719243Z",
+    "tools": [
+      {
+        "vendor": "Link2Trust",
+        "name": "CryptoScanner",
+        "version": "0.1.0",
+        "description": "Cryptographic security analysis tool"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bomRef": "target-component",
+      "name": "qPKI",
+      "version": "unknown",
+      "description": "Application analyzed by CryptoScanner",
+      "cryptoProperties": null
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-eb000832",
+      "name": "openssl",
+      "version": "0.10",
+      "description": "Cryptographic library detected in ../qPKI/deploy-production.sh",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "symmetric-encryption",
+            "algorithmName": "AES",
+            "keyLength": 256,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          },
+          {
+            "primitive": "digital-signature",
+            "algorithmName": "RSA",
+            "keyLength": 2048,
+            "cryptographicStrength": 112,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 112,
+            "nistSecurityLevel": 3,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-7669b0f6",
+      "name": "cryptography",
+      "version": null,
+      "description": "Cryptographic library detected in ../qPKI/app.py",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-43f49880",
+      "name": "hashlib",
+      "version": null,
+      "description": "Cryptographic library detected in ../qPKI/app.py",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "hashlib",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-470e1602",
+      "name": "jwt",
+      "version": null,
+      "description": "Cryptographic library detected in ../qPKI/src/qpki/api/app.py",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "jwt",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-2ddb24c6",
+      "name": "ssl",
+      "version": null,
+      "description": "Cryptographic library detected in ../qPKI/deploy-production.sh",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "ssl",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    }
+  ],
+  "declarations": {
+    "assessor": "CryptoScanner v0.1.0",
+    "assessmentDate": "2025-08-22T13:27:24.719503Z",
+    "compliance": null,
+    "riskAssessments": [
+      {
+        "category": "hardcoded-secrets",
+        "level": "high",
+        "description": "Found 3 hardcoded secrets in codebase",
+        "mitigation": "Rotate exposed secrets and implement secure secret management"
+      }
+    ]
+  }
+}

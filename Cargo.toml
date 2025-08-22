@@ -5,7 +5,7 @@ edition = "2021"
 
 [features]
 default = []
-server = ["tokio", "warp", "uuid"]
+server = ["tokio", "warp"]
 
 [dependencies]
 walkdir = "2.4.0"
@@ -21,10 +21,13 @@ infer = "0.15"
 indicatif = "0.17"
 lazy_static = "1.4"
 
+# CBOM dependencies
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4"] }
+
 # Server dependencies (optional)
 tokio = { version = "1.0", features = ["full"], optional = true }
 warp = { version = "0.3", optional = true }
-uuid = { version = "1.0", features = ["v4"], optional = true }
 
 [dev-dependencies]
 tempfile = "3.8"

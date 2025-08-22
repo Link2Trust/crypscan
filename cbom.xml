@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cbom>
+<!-- JSON representation: -->
+<!-- {
+  "specVersion": "1.6",
+  "version": 1,
+  "serialNumber": "2215cafc-5a40-4959-ac5c-c6c275597361",
+  "metadata": {
+    "timestamp": "2025-08-22T13:07:13.624808Z",
+    "tools": [
+      {
+        "vendor": "Link2Trust",
+        "name": "CryptoScanner",
+        "version": "0.1.0",
+        "description": "Cryptographic security analysis tool"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bomRef": "target-component",
+      "name": "CryptoScanner",
+      "version": "unknown",
+      "description": "Application analyzed by CryptoScanner",
+      "cryptoProperties": null
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-bf31275d",
+      "name": "rustls",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "rustls",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-38dc8b3f",
+      "name": "pycryptodome",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-cfe0649e",
+      "name": "bouncycastle",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/cbom/mod.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "symmetric-encryption",
+            "algorithmName": "AES",
+            "keyLength": 256,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-3fe394b4",
+      "name": "sun.security",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "sun.security",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-8aad5535",
+      "name": "jsonwebtoken",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "jsonwebtoken",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-4f93294d",
+      "name": "golang.crypto",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-336f0688",
+      "name": "libsodium",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "libsodium",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-83c1fda9",
+      "name": "mbedtls",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "mbedtls",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-d52642d1",
+      "name": "javax.crypto",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-4a05177d",
+      "name": "ssl",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "ssl",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-c6107122",
+      "name": "node-forge",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "node-forge",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-4229bb89",
+      "name": "cryptography",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-e0a6e17b",
+      "name": "ring",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "ring",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-7ffdee55",
+      "name": "openssl",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "symmetric-encryption",
+            "algorithmName": "AES",
+            "keyLength": 256,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          },
+          {
+            "primitive": "digital-signature",
+            "algorithmName": "RSA",
+            "keyLength": 2048,
+            "cryptographicStrength": 112,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 112,
+            "nistSecurityLevel": 3,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-8c99db09",
+      "name": "openssl",
+      "version": "0.10",
+      "description": "Cryptographic library detected in ./src/cbom/mod.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "symmetric-encryption",
+            "algorithmName": "AES",
+            "keyLength": 256,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          },
+          {
+            "primitive": "digital-signature",
+            "algorithmName": "RSA",
+            "keyLength": 2048,
+            "cryptographicStrength": 112,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 112,
+            "nistSecurityLevel": 3,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-26b9b5dd",
+      "name": "hashlib",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "hashlib",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-6fc38d63",
+      "name": "secrecy",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "secrecy",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-2d852e0c",
+      "name": "java.security",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "java.security",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-b24a35b9",
+      "name": "crypto",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-76f1080e",
+      "name": "pycrypto",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-a942f074",
+      "name": "bcrypt",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "bcrypt",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-9213540f",
+      "name": "jwt",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "jwt",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-33fb07d7",
+      "name": "wolfssl",
+      "version": null,
+      "description": "Cryptographic library detected in ./src/scanner/code.rs",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "unknown",
+            "algorithmName": "wolfssl",
+            "keyLength": null,
+            "cryptographicStrength": null,
+            "quantumSafe": false,
+            "classicalSecurityLevel": null,
+            "nistSecurityLevel": null,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    }
+  ],
+  "declarations": {
+    "assessor": "CryptoScanner v0.1.0",
+    "assessmentDate": "2025-08-22T13:07:13.624949Z",
+    "compliance": null,
+    "riskAssessments": [
+      {
+        "category": "hardcoded-secrets",
+        "level": "high",
+        "description": "Found 3 hardcoded secrets in codebase",
+        "mitigation": "Rotate exposed secrets and implement secure secret management"
+      },
+      {
+        "category": "library-complexity",
+        "level": "medium",
+        "description": "High cryptographic library diversity (22 unique libraries)",
+        "mitigation": "Consider consolidating cryptographic implementations"
+      }
+    ]
+  }
+} -->
+</cbom>

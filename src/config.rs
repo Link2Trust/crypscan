@@ -28,4 +28,20 @@ pub struct Config {
     /// Path to web assets directory (only used with --serve)
     #[arg(long, default_value = "./web")]
     pub web_dir: String,
+
+    /// Generate CycloneDX CBOM (Cryptography Bill of Materials)
+    #[arg(long, default_value_t = false)]
+    pub cbom: bool,
+
+    /// CBOM output format (json, xml)
+    #[arg(long, default_value = "json")]
+    pub cbom_format: String,
+
+    /// CBOM output file path
+    #[arg(long, default_value = "./cbom.json")]
+    pub cbom_output: String,
+
+    /// Application name for CBOM metadata
+    #[arg(long)]
+    pub app_name: Option<String>,
 }
