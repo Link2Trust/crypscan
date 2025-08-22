@@ -1,14 +1,15 @@
 // Enhanced CryptoScanner Dashboard
 // Business-grade security analysis interface
 
-// Note: Chart.js plugins will be registered when available
+// Register Chart.js plugins
+Chart.register(ChartDataLabels);
 
 // Global state management
 let globalData = [];
-let filteredData = [];
-let currentPage = 1;
-const itemsPerPage = 25;
-let sortConfig = { field: null, direction: 'asc' };
+let findingsTable = null;
+
+// Global charts object for theme updates
+window.dashboardCharts = {};
 
 // Color schemes for professional look
 const colorSchemes = {
@@ -51,7 +52,7 @@ function calculateRiskScore(findings) {
   
   // High-risk secret types
   const highRiskSecrets = secretFindings.filter(f => 
-    ['AWS Access Key', 'GitHub Token', 'Private Key', 'Database URI'].includes(f.keyword)
+    ['PostgreSQL URI', 'AWS Access Key', 'GitHub Token', 'Private Key', 'Database URI'].includes(f.keyword)
   );
   riskScore += highRiskSecrets.length * 25;
   
@@ -72,24 +73,86 @@ function getRiskLevel(score) {
   return { level: 'Minimal', class: 'success', icon: '🟢' };
 }
 
+// Chart creation with professional styling
+function createChart(elementId, type, data, options = {}) {
+  const ctx = document.getElementById(elementId);
+  if (!ctx) {
+    console.warn(`Chart element ${elementId} not found`);
+    return null;
+  }
+  
+  // Get current theme
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? '#f9fafb' : '#111827';
+  const gridColor = isDark ? '#374151' : '#e5e7eb';
+  
+  const defaultOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: { size: 12, family: 'Inter, sans-serif' },
+          color: textColor
+        }
+      },
+      tooltip: {
+        backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(17, 24, 39, 0.95)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: isDark ? '#4b5563' : '#374151',
+        borderWidth: 1,
+        cornerRadius: 8,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 12 }
+      }
+    }
+  };
+  
+  // Merge options more carefully
+  const mergedOptions = {
+    ...defaultOptions,
+    ...options,
+    plugins: {
+      ...defaultOptions.plugins,
+      ...(options.plugins || {})
+    }
+  };
+  
+  const chart = new Chart(ctx, {
+    type,
+    data,
+    options: mergedOptions
+  });
+  
+  // Store chart for theme updates
+  window.dashboardCharts[elementId] = chart;
+  
+  return chart;
+}
+
 // Navigation handling
 function initializeNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('main section');
   
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetId = link.getAttribute('href').substring(1);
-      const targetSection = document.getElementById(targetId);
-      
-      // Update active nav state
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      
-      // Scroll to section
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' });
+      if (link.getAttribute('href').startsWith('#')) {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+        
+        // Update active nav state
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        // Scroll to section
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     });
   });
@@ -141,34 +204,9 @@ class FindingsTable {
     this.render();
   }
   
-  sort(field) {
-    if (this.sortConfig.field === field) {
-      this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortConfig.field = field;
-      this.sortConfig.direction = 'asc';
-    }
-    
-    this.filteredData.sort((a, b) => {
-      let aVal = a[field];
-      let bVal = b[field];
-      
-      if (typeof aVal === 'string') {
-        aVal = aVal.toLowerCase();
-        bVal = bVal.toLowerCase();
-      }
-      
-      if (aVal < bVal) return this.sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return this.sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-    
-    this.render();
-  }
-  
   getSeverityBadge(finding) {
     if (finding.category === 'secret') {
-      const highRiskSecrets = ['AWS Access Key', 'GitHub Token', 'Private Key', 'Database URI'];
+      const highRiskSecrets = ['AWS Access Key', 'GitHub Token', 'Private Key', 'PostgreSQL URI'];
       if (highRiskSecrets.includes(finding.keyword)) {
         return '<span class="badge danger">Critical</span>';
       }
@@ -267,262 +305,56 @@ class FindingsTable {
   }
 }
 
-// Chart creation with professional styling
-function createChart(elementId, type, data, options = {}) {
-  // Check if Chart.js is available
-  if (typeof Chart === 'undefined') {
-    console.warn('Chart.js not loaded, skipping chart creation for', elementId);
-    return null;
-  }
-  
-  const ctx = document.getElementById(elementId);
-  if (!ctx) {
-    console.warn(`Chart element ${elementId} not found`);
-    return null;
-  }
-  
-  try {
-    // Get current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#f9fafb' : '#111827';
-    const gridColor = isDark ? '#374151' : '#e5e7eb';
-    
-    const defaultOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            usePointStyle: true,
-            padding: 20,
-            font: {
-              size: 12
-            },
-            color: textColor
-          }
-        }
-      },
-      scales: type !== 'doughnut' && type !== 'pie' ? {
-        x: {
-          ticks: {
-            color: textColor
-          },
-          grid: {
-            color: gridColor
-          }
-        },
-        y: {
-          ticks: {
-            color: textColor
-          },
-          grid: {
-            color: gridColor
-          }
-        }
-      } : undefined
-    };
-    
-    // Merge options for Chart.js 3.x compatibility
-    const mergedOptions = {
-      ...defaultOptions,
-      ...options
-    };
-    
-    // Handle scales merge separately for Chart.js 3.x
-    if (options.scales && defaultOptions.scales) {
-      mergedOptions.scales = {
-        ...defaultOptions.scales,
-        ...options.scales
-      };
-    }
-    
-    const chart = new Chart(ctx, {
-      type,
-      data,
-      options: mergedOptions
-    });
-    
-    // Store chart for theme updates
-    if (!window.dashboardCharts) {
-      window.dashboardCharts = {};
-    }
-    window.dashboardCharts[elementId] = chart;
-    
-    console.log('Chart created successfully:', elementId);
-    return chart;
-  } catch (error) {
-    console.error('Error creating chart', elementId, error);
-    return null;
-  }
-}
-
-// Global charts object for theme updates
-window.dashboardCharts = {};
-
-// Main data loading and dashboard initialization
-console.log('Starting dashboard initialization...');
-
-// Wait for DOM to be ready and Chart.js to load
-function startDashboard() {
-  console.log('Starting data fetch...');
-  fetch('data/findings.json')
-    .then(response => {
-      console.log('Fetch response:', response.status, response.statusText);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Data loaded successfully:', data.length, 'findings');
-      globalData = data;
-      initializeDashboard(data);
-    })
-    .catch(error => {
-      console.error('Error loading findings data:', error);
-      showErrorState('Failed to load security analysis data. Please check the console for details.');
-    });
-}
-
-// Global modal control - Force close any open modals
-function forceCloseModal() {
-  const modal = document.getElementById('findingModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    console.log('Modal force closed');
-  }
-}
-
-// Make closeFindingModal globally available
-window.closeFindingModal = function() {
-  const modal = document.getElementById('findingModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    console.log('Modal closed via global function');
-  }
-};
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, checking Chart.js availability...');
-  
-  // Force close any modals on page load
-  forceCloseModal();
-  
-  // Add escape key handler
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      forceCloseModal();
-    }
-  });
-  
-  // Check Chart.js availability with retries
-  function checkChartJs(retries = 5) {
-    if (typeof Chart !== 'undefined') {
-      console.log('Chart.js loaded successfully!');
-      startDashboard();
-    } else if (retries > 0) {
-      console.log('Chart.js not ready, retrying...', retries, 'attempts left');
-      setTimeout(() => checkChartJs(retries - 1), 200);
-    } else {
-      console.warn('Chart.js failed to load, proceeding without charts');
-      startDashboard();
-    }
-  }
-  
-  // Start checking after a brief delay
-  setTimeout(checkChartJs, 100);
-});
-
+// Main dashboard initialization
 function initializeDashboard(data) {
   console.log('Initializing dashboard with', data.length, 'findings');
   
-  try {
-    // Hide loading state
-    console.log('Hiding loading state...');
-    const loadingState = document.getElementById('loadingState');
-    const dashboardContent = document.getElementById('dashboardContent');
-    
-    if (loadingState) {
-      loadingState.classList.add('hidden');
-      console.log('Loading state hidden');
-    } else {
-      console.warn('Loading state element not found');
-    }
-    
-    if (dashboardContent) {
-      dashboardContent.classList.remove('hidden');
-      console.log('Dashboard content shown');
-    } else {
-      console.warn('Dashboard content element not found');
-    }
-    
-    // Ensure modal is hidden on initialization
-    const modal = document.getElementById('findingModal');
-    if (modal) {
-      modal.classList.add('hidden');
-      console.log('Modal hidden on init');
-    }
-    
-    // Initialize navigation
-    console.log('Initializing navigation...');
-    initializeNavigation();
-    
-    // Update timestamp
-    console.log('Updating timestamp...');
-    updateScanTimestamp();
-    
-    // Categorize findings
-    console.log('Categorizing findings...');
-    const libraryFindings = data.filter(f => f.category === 'library');
-    const secretFindings = data.filter(f => f.category === 'secret');
-    const keystoreFindings = data.filter(f => f.category === 'keystore');
-    const commandFindings = data.filter(f => f.category === 'key-command');
-    const otherFindings = data.filter(f => !['library', 'secret', 'keystore', 'key-command'].includes(f.category));
-    
-    console.log('Categorized findings:', {
-      total: data.length,
-      secrets: secretFindings.length,
-      libraries: libraryFindings.length,
-      keystores: keystoreFindings.length,
-      commands: commandFindings.length,
-      other: otherFindings.length
-    });
-    
-    // Update metrics cards
-    console.log('Updating metrics cards...');
-    updateMetricsCards({
-      total: data.length,
-      secrets: secretFindings.length,
-      libraries: libraryFindings.length,
-      keystores: keystoreFindings.length,
-      files: new Set(data.map(f => f.file)).size
-    });
-    
-    // Update risk assessment
-    console.log('Updating risk assessment...');
-    updateRiskAssessment(data);
-    
-    // Create charts
-    console.log('Creating charts...');
-    createLibraryCharts(libraryFindings);
-    createSecretsCharts(secretFindings);
-    
-    // Initialize findings table
-    console.log('Initializing findings table...');
-    const findingsTable = new FindingsTable(data);
-    findingsTable.render();
-    
-    // Setup global search
-    console.log('Setting up global search...');
-    setupGlobalSearch(data);
-    
-    console.log('Dashboard initialization completed successfully!');
-  } catch (error) {
-    console.error('Error during dashboard initialization:', error);
-    showErrorState('Dashboard initialization failed: ' + error.message);
-  }
+  // Hide loading state
+  document.getElementById('loadingState').classList.add('hidden');
+  document.getElementById('dashboardContent').classList.remove('hidden');
+  
+  // Initialize navigation
+  initializeNavigation();
+  
+  // Update timestamp
+  updateScanTimestamp();
+  
+  // Categorize findings
+  const libraryFindings = data.filter(f => f.category === 'library');
+  const secretFindings = data.filter(f => f.category === 'secret');
+  const keystoreFindings = data.filter(f => f.category === 'keystore');
+  const commandFindings = data.filter(f => f.category === 'key-command');
+  
+  console.log('Categorized findings:', {
+    total: data.length,
+    secrets: secretFindings.length,
+    libraries: libraryFindings.length,
+    keystores: keystoreFindings.length,
+    commands: commandFindings.length
+  });
+  
+  // Update metrics cards
+  updateMetricsCards({
+    total: data.length,
+    secrets: secretFindings.length,
+    libraries: libraryFindings.length,
+    keystores: keystoreFindings.length,
+    files: new Set(data.map(f => f.file)).size
+  });
+  
+  // Update risk assessment
+  updateRiskAssessment(data);
+  
+  // Create charts
+  createLibraryCharts(libraryFindings);
+  createSecretsCharts(secretFindings);
+  
+  // Initialize findings table
+  findingsTable = new FindingsTable(data);
+  findingsTable.render();
+  
+  // Setup global search
+  setupGlobalSearch(data);
 }
 
 function updateMetricsCards(metrics) {
@@ -600,7 +432,7 @@ function updateRecommendations(data, riskInfo) {
   const secretsCount = data.filter(f => f.category === 'secret').length;
   const highRiskSecrets = data.filter(f => 
     f.category === 'secret' && 
-    ['AWS Access Key', 'GitHub Token', 'Private Key'].includes(f.keyword)
+    ['PostgreSQL URI', 'AWS Access Key', 'GitHub Token', 'Private Key'].includes(f.keyword)
   ).length;
   
   let recs = [];
@@ -638,40 +470,41 @@ function createLibraryCharts(libraryFindings) {
   const libLabels = Object.keys(libCounts);
   const libData = Object.values(libCounts);
   
-  createChart('libraryChartBar', 'bar', {
-    labels: libLabels,
-    datasets: [{
-      label: 'Usage Count',
-      data: libData,
-      backgroundColor: generateProfessionalColors(libLabels.length, 'primary'),
-      borderRadius: 4,
-      borderSkipped: false
-    }]
-  }, {
-    scales: {
-      x: {
-        ticks: { maxRotation: 45, minRotation: 0 },
-        grid: { display: false }
-      },
-      y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+  if (libLabels.length > 0) {
+    createChart('libraryChartBar', 'bar', {
+      labels: libLabels,
+      datasets: [{
+        label: 'Usage Count',
+        data: libData,
+        backgroundColor: generateProfessionalColors(libLabels.length, 'primary'),
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    }, {
+      scales: {
+        x: {
+          ticks: { maxRotation: 45, minRotation: 0 },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true
+        }
       }
-    }
-  });
-  
-  // Library types pie chart
-  createChart('libraryChartPie', 'doughnut', {
-    labels: libLabels,
-    datasets: [{
-      data: libData,
-      backgroundColor: generateProfessionalColors(libLabels.length, 'primary'),
-      borderWidth: 2,
-      borderColor: '#ffffff'
-    }]
-  }, {
-    cutout: '60%'
-  });
+    });
+    
+    // Library types pie chart
+    createChart('libraryChartPie', 'doughnut', {
+      labels: libLabels,
+      datasets: [{
+        data: libData,
+        backgroundColor: generateProfessionalColors(libLabels.length, 'primary'),
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    }, {
+      cutout: '60%'
+    });
+  }
   
   // File types charts
   const fileTypeCounts = {};
@@ -683,27 +516,29 @@ function createLibraryCharts(libraryFindings) {
   const typeLabels = Object.keys(fileTypeCounts);
   const typeData = Object.values(fileTypeCounts);
   
-  createChart('fileTypeChartBar', 'bar', {
-    labels: typeLabels,
-    datasets: [{
-      label: 'File Count',
-      data: typeData,
-      backgroundColor: generateProfessionalColors(typeLabels.length, 'warning'),
-      borderRadius: 4
-    }]
-  });
-  
-  createChart('fileTypeChartPie', 'doughnut', {
-    labels: typeLabels,
-    datasets: [{
-      data: typeData,
-      backgroundColor: generateProfessionalColors(typeLabels.length, 'warning'),
-      borderWidth: 2,
-      borderColor: '#ffffff'
-    }]
-  }, {
-    cutout: '60%'
-  });
+  if (typeLabels.length > 0) {
+    createChart('fileTypeChartBar', 'bar', {
+      labels: typeLabels,
+      datasets: [{
+        label: 'File Count',
+        data: typeData,
+        backgroundColor: generateProfessionalColors(typeLabels.length, 'warning'),
+        borderRadius: 4
+      }]
+    });
+    
+    createChart('fileTypeChartPie', 'doughnut', {
+      labels: typeLabels,
+      datasets: [{
+        data: typeData,
+        backgroundColor: generateProfessionalColors(typeLabels.length, 'warning'),
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    }, {
+      cutout: '60%'
+    });
+  }
 }
 
 function createSecretsCharts(secretFindings) {
@@ -747,8 +582,7 @@ function createSecretsCharts(secretFindings) {
         grid: { display: false }
       },
       y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+        beginAtZero: true
       }
     }
   });
@@ -781,12 +615,6 @@ function setupGlobalSearch(data) {
   globalSearch.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase();
     if (searchTerm.length < 2) return;
-    
-    const results = data.filter(item => 
-      item.file.toLowerCase().includes(searchTerm) ||
-      item.keyword.toLowerCase().includes(searchTerm) ||
-      item.line_content.toLowerCase().includes(searchTerm)
-    );
     
     // Update table with search results
     const tableSearch = document.getElementById('tableSearch');
@@ -840,8 +668,8 @@ function showFindingDetails(finding) {
         <div class="text-sm text-muted mb-sm">📁 ${finding.file}:${finding.line_number}</div>
         <div class="text-sm text-muted mb-sm">🔤 Language: ${finding.language}</div>
         <div class="text-sm text-muted mb-md">📝 Source: ${finding.source}</div>
-        <div style="background-color: var(--gray-800); padding: var(--spacing-md); border-radius: var(--radius-md);">
-          <code style="color: var(--gray-100); font-family: var(--font-family-mono);">${finding.line_content}</code>
+        <div style="background-color: var(--bg-tertiary); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--border-primary);">
+          <code style="color: var(--text-primary); font-family: var(--font-family-mono);">${finding.line_content}</code>
         </div>
       </div>
     </div>
@@ -914,3 +742,27 @@ function toggleTableView() {
   console.log('Toggle table view - feature to be implemented');
 }
 
+// Main data loading
+console.log('Starting data fetch...');
+fetch('data/findings.json')
+  .then(response => {
+    console.log('Fetch response:', response.status, response.statusText);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Data loaded successfully:', data.length, 'findings');
+    globalData = data;
+    initializeDashboard(data);
+  })
+  .catch(error => {
+    console.error('Error loading findings data:', error);
+    showErrorState('Failed to load security analysis data. Please check the console for details.');
+  });
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, CryptoScanner Dashboard initialized');
+});
