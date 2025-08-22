@@ -11,6 +11,7 @@ use crate::utils::report::{write_report_to_json, Finding};
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use std::path::Path;
+use std::{fs, io};
 use walkdir::{DirEntry, WalkDir};
 
 fn is_supported_code_file(path: &Path) -> bool {
@@ -87,7 +88,7 @@ fn has_keystore_extension(path: &Path) -> bool {
     }
 }
 
-pub fn scan_directory(config: &Config) {
+pub fn scan_directory(config: &Config) -> io::Result<()> {
     let skip_mime_prefixes = vec!["text/markdown", "text/plain", "application/log"];
 
     let entries: Vec<_> = WalkDir::new(&config.path)
@@ -131,14 +132,14 @@ pub fn scan_directory(config: &Config) {
                 results.extend(crate::scanner::code::scan_file(path));
                 results.extend(scan_key_commands(path));
                 
-                // Scan for secrets if enabled
-                if config.scan_secrets && !config.skip_secrets {
+                // Scan for secrets unless explicitly skipped
+                if !config.skip_secrets {
                     results.extend(crate::scanner::secrets::scan_file(path));
                 }
             }
             
-            // Scan config files for secrets (but not for crypto libraries) if enabled
-            if is_config_file(path) && config.scan_secrets && !config.skip_secrets {
+            // Scan config files for secrets (but not for crypto libraries) unless explicitly skipped
+            if is_config_file(path) && !config.skip_secrets {
                 results.extend(crate::scanner::secrets::scan_file(path));
             }
 
@@ -150,9 +151,14 @@ pub fn scan_directory(config: &Config) {
 
     pb.finish_with_message("✅ Scan complete");
 
-    if let Err(err) = write_report_to_json(&findings, "web/data/findings.json") {
-        eprintln!("❌ Failed to write findings.json: {}", err);
-    } else {
-        println!("✅ Findings written to web/data/findings.json");
+    // Ensure output directory exists
+    let output_path = "web/data/findings.json";
+    if let Some(parent) = Path::new(output_path).parent() {
+        fs::create_dir_all(parent)?;
     }
+
+    write_report_to_json(&findings, output_path)?;
+    println!("✅ Findings written to {}", output_path);
+    
+    Ok(())
 }

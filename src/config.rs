@@ -13,11 +13,7 @@ pub struct Config {
     #[arg(long, default_value_t = false)]
     pub use_mime_filter: bool,
 
-    /// Enable scanning for hardcoded secrets (API keys, tokens, passwords, etc.)
-    #[arg(long, default_value_t = true)]
-    pub scan_secrets: bool,
-
-    /// Skip secrets scanning (opposite of --scan-secrets)
+    /// Skip scanning for hardcoded secrets (API keys, tokens, passwords, etc.)
     #[arg(long, default_value_t = false)]
     pub skip_secrets: bool,
 }

@@ -2,124 +2,736 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Usage Details</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 1rem;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    code {
-      white-space: pre-wrap;
-    }
-    .back-link {
-      display: inline-block;
-      margin-top: 2rem;
-      font-weight: bold;
-    }
-    a.vscode-link {
-      color: #0074cc;
-      text-decoration: none;
-    }
-    a.vscode-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoScanner - Finding Details</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Custom Scripts -->
+  <script defer src="js/theme.js"></script>
 </head>
 <body>
-  <h1>🔍 Crypto Usage Details</h1>
-  <p id="filterInfo">Loading...</p>
-
-  <table id="resultsTable" style="display: none;">
-    <thead>
-      <tr>
-        <th>File (click to open in VS Code)</th>
-        <th>Line</th>
-        <th>Keyword</th>
-        <th>Context</th>
-        <th>Version</th>
-        <th>Snippet</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-
-  <a href="index.html" class="back-link">⬅ Back to Dashboard</a>
-
+  <div class="main-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="mb-lg">
+        <div class="flex items-center gap-sm mb-lg">
+          <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
+          <div>
+            <h3 class="mb-0">CryptoScanner</h3>
+            <p class="text-xs text-muted mb-0">Finding Details</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link">
+              <span class="nav-icon">⬅</span>
+              Back to Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#summary" class="nav-link active">
+              <span class="nav-icon">📊</span>
+              Summary
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#findings" class="nav-link">
+              <span class="nav-icon">🔍</span>
+              All Findings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#recommendations" class="nav-link">
+              <span class="nav-icon">📝</span>
+              Recommendations
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="mt-lg">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mb-sm">Filter Actions</h4>
+            <div class="flex flex-col gap-sm">
+              <button class="btn btn-primary btn-sm" onclick="exportFilteredResults()">📄 Export Results</button>
+              <button class="btn btn-secondary btn-sm" onclick="clearFilter()">🚫 Clear Filter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="flex items-center gap-md">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
+        <div>
+          <h1 class="mb-0">Finding Details</h1>
+          <p class="text-sm text-muted mb-0" id="filterInfo">Loading filter information...</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-md">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search in results..." id="detailSearch">
+        </div>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="btn btn-secondary" onclick="window.history.back()">⬅ Back</button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Loading State -->
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <span>Loading detailed findings...</span>
+      </div>
+      
+      <!-- Error State -->
+      <div id="errorState" class="hidden">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="metric-icon danger" style="margin: 0 auto var(--spacing-md) auto;">❌</div>
+            <h3 class="mb-md">No Filter Provided</h3>
+            <p class="text-muted mb-lg">Please navigate from the main dashboard to view specific findings.</p>
+            <a href="index.html" class="btn btn-primary">⬅ Go to Dashboard</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Details Content -->
+      <div id="detailsContent" class="hidden">
+        <!-- Summary Section -->
+        <section id="summary" class="mb-xl">
+          <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="metric-card">
+              <div class="metric-icon info">🔍</div>
+              <div class="metric-value" id="totalMatches">0</div>
+              <div class="metric-label">Total Matches</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon warning">📁</div>
+              <div class="metric-value" id="uniqueFiles">0</div>
+              <div class="metric-label">Affected Files</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon success" id="riskIcon">📈</div>
+              <div class="metric-value" id="riskLevel">-</div>
+              <div class="metric-label">Risk Level</div>
+            </div>
+          </div>
+          
+          <!-- Filter Summary Card -->
+          <div class="card mb-lg">
+            <div class="card-header">
+              <h3 class="mb-0">Filter Summary</h3>
+            </div>
+            <div class="card-body">
+              <div class="flex gap-lg">
+                <div class="flex-1">
+                  <h4 class="mb-sm">Search Criteria</h4>
+                  <div id="filterCriteria"></div>
+                </div>
+                <div class="flex-1">
+                  <h4 class="mb-sm">Distribution</h4>
+                  <div id="distributionInfo"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Findings Section -->
+        <section id="findings" class="mb-xl">
+          <div class="card">
+            <div class="card-header">
+              <div class="flex justify-between items-center">
+                <h3 class="mb-0">📋 Detailed Findings</h3>
+                <div class="flex items-center gap-sm">
+                  <select id="sortBy" class="btn btn-secondary btn-sm">
+                    <option value="file">Sort by File</option>
+                    <option value="line_number">Sort by Line</option>
+                    <option value="keyword">Sort by Keyword</option>
+                    <option value="language">Sort by Language</option>
+                  </select>
+                  <button class="btn btn-secondary btn-sm" onclick="toggleSortOrder()" id="sortOrderBtn">⬆ ASC</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="table" id="resultsTable">
+                  <thead>
+                    <tr>
+                      <th>File Location</th>
+                      <th>Line</th>
+                      <th>Type</th>
+                      <th>Context</th>
+                      <th>Language</th>
+                      <th>Code Snippet</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody">
+                    <!-- Data will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="flex justify-between items-center mt-lg">
+                <div class="text-sm text-muted" id="tableInfo">
+                  Showing 0 of 0 findings
+                </div>
+                <div class="flex items-center gap-sm" id="tablePagination">
+                  <!-- Pagination buttons will be added by JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="mb-xl">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="mb-0">📝 Security Recommendations</h3>
+            </div>
+            <div class="card-body">
+              <div id="recommendationsContent">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Sidebar -->
+  <aside id="mobile-sidebar" class="mobile-sidebar">
+    <div class="mb-lg">
+      <div class="flex items-center justify-between mb-lg">
+        <div class="flex items-center gap-sm">
+          <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
+          <div>
+            <h3 class="mb-0">CryptoScanner</h3>
+            <p class="text-xs text-muted mb-0">Finding Details</p>
+          </div>
+        </div>
+        <button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+    
+    <nav>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">
+            <span class="nav-icon">⬅</span>
+            Back to Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#summary" class="nav-link active">
+            <span class="nav-icon">📊</span>
+            Summary
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#findings" class="nav-link">
+            <span class="nav-icon">🔍</span>
+            All Findings
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#recommendations" class="nav-link">
+            <span class="nav-icon">📝</span>
+            Recommendations
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="mt-lg">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-sm">Filter Actions</h4>
+          <div class="flex flex-col gap-sm">
+            <button class="btn btn-primary btn-sm" onclick="exportFilteredResults()">📄 Export Results</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearFilter()">🚫 Clear Filter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay" class="mobile-overlay"></div>
+  
   <script>
+    // Enhanced Details Page Functionality
+    let allMatches = [];
+    let filteredMatches = [];
+    let currentPage = 1;
+    let itemsPerPage = 20;
+    let sortField = 'file';
+    let sortOrder = 'asc';
+    
+    // Get filter parameter
     const params = new URLSearchParams(window.location.search);
     const filter = params.get('filter');
-    const filterInfo = document.getElementById('filterInfo');
-    const table = document.getElementById('resultsTable');
-    const tbody = document.getElementById('tableBody');
-
-    const REDACT_PREFIX = "/Users/johankestens/Sandbox/xst-web/web-crypto-service";
-    const DISPLAY_PREFIX = "<path-to-code-scanned>";
-    const DISPLAY_FILENAME = "<scanned-file>";
-
-    if (!filter) {
-      filterInfo.textContent = "❌ No filter provided in URL.";
-    } else {
-      filterInfo.textContent = `Showing results for: ${filter}`;
-
+    const category = params.get('category');
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!filter && !category) {
+        showErrorState();
+        return;
+      }
+      
+      loadFilteredData();
+      setupEventListeners();
+    });
+    
+    function showErrorState() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('errorState').classList.remove('hidden');
+    }
+    
+    function loadFilteredData() {
       fetch('data/findings.json')
-        .then(res => res.json())
-        .then(data => {
-          const matches = data.filter(entry => {
-            const keywordWithVersion = entry.version
-              ? `${entry.keyword} (v${entry.version})`
-              : entry.keyword;
-            const ext = entry.file.split('.').pop().toLowerCase();
-            return keywordWithVersion === filter || ext === filter.toLowerCase();
-          });
-
-          if (matches.length === 0) {
-            filterInfo.textContent += " (no matches found)";
-            return;
-          }
-
-          table.style.display = "table";
-          matches.forEach(entry => {
-            // Store the original file for VSCode link
-            const originalPath = entry.file;
-            const redactedPath = originalPath
-              .replace(REDACT_PREFIX, DISPLAY_PREFIX)
-              .replace(/[^/]+$/, DISPLAY_FILENAME);
-
-            const vscodeUrl = `vscode://file${originalPath}:${entry.line_number}`;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>
-                <a href="${vscodeUrl}" class="vscode-link" target="_blank">
-                  ${redactedPath}
-                </a>
-              </td>
-              <td>${entry.line_number}</td>
-              <td>${entry.keyword}</td>
-              <td>${entry.context}</td>
-              <td>${entry.version ?? ''}</td>
-              <td><code>${entry.line_content}</code></td>
-            `;
-            tbody.appendChild(row);
-          });
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to load data');
+          return response.json();
         })
-        .catch(err => {
-          filterInfo.textContent = "❌ Error loading findings.json";
-          console.error(err);
+        .then(data => {
+          // Apply filters
+          let matches = data;
+          
+          if (filter) {
+            matches = data.filter(entry => {
+              const keywordWithVersion = entry.version 
+                ? `${entry.keyword} v${entry.version}` 
+                : entry.keyword;
+              const ext = entry.file.split('.').pop().toLowerCase();
+              
+              return keywordWithVersion === filter || 
+                     entry.keyword === filter ||
+                     ext === filter.toLowerCase() ||
+                     entry.file.toLowerCase().includes(filter.toLowerCase()) ||
+                     entry.line_content.toLowerCase().includes(filter.toLowerCase());
+            });
+          }
+          
+          if (category) {
+            matches = matches.filter(entry => entry.category === category);
+          }
+          
+          allMatches = matches;
+          filteredMatches = matches;
+          
+          initializeDetailsPage();
+        })
+        .catch(error => {
+          console.error('Error loading data:', error);
+          showErrorState();
         });
+    }
+    
+    function initializeDetailsPage() {
+      // Hide loading, show content
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('detailsContent').classList.remove('hidden');
+      
+      // Update filter info
+      updateFilterInfo();
+      
+      // Update summary metrics
+      updateSummaryMetrics();
+      
+      // Render findings table
+      renderFindings();
+      
+      // Setup navigation
+      setupNavigation();
+      
+      // Generate recommendations
+      generateRecommendations();
+    }
+    
+    function updateFilterInfo() {
+      const filterInfo = document.getElementById('filterInfo');
+      let filterText = '';
+      
+      if (filter && category) {
+        filterText = `Filtered by "${filter}" in category "${category}"`;
+      } else if (filter) {
+        filterText = `Filtered by "${filter}"`;
+      } else if (category) {
+        filterText = `Filtered by category "${category}"`;
+      }
+      
+      filterInfo.textContent = `${filterText} - ${allMatches.length} result${allMatches.length !== 1 ? 's' : ''} found`;
+    }
+    
+    function updateSummaryMetrics() {
+      const uniqueFiles = new Set(allMatches.map(f => f.file)).size;
+      const riskLevel = calculateFilterRisk(allMatches);
+      
+      document.getElementById('totalMatches').textContent = allMatches.length;
+      document.getElementById('uniqueFiles').textContent = uniqueFiles;
+      document.getElementById('riskLevel').textContent = riskLevel.level;
+      
+      const riskIcon = document.getElementById('riskIcon');
+      riskIcon.className = `metric-icon ${riskLevel.class}`;
+      riskIcon.textContent = riskLevel.icon;
+      
+      // Update filter criteria
+      const criteriaDiv = document.getElementById('filterCriteria');
+      criteriaDiv.innerHTML = `
+        <div class="flex items-center gap-sm mb-sm">
+          <span class="badge info">Filter:</span>
+          <span class="font-mono text-sm">${filter || category || 'None'}</span>
+        </div>
+        <div class="flex items-center gap-sm">
+          <span class="badge secondary">Results:</span>
+          <span class="text-sm">${allMatches.length} finding${allMatches.length !== 1 ? 's' : ''}</span>
+        </div>
+      `;
+      
+      // Update distribution info
+      const distributionDiv = document.getElementById('distributionInfo');
+      const categories = {};
+      allMatches.forEach(match => {
+        categories[match.category] = (categories[match.category] || 0) + 1;
+      });
+      
+      distributionDiv.innerHTML = Object.entries(categories).map(([cat, count]) => `
+        <div class="flex items-center gap-sm mb-sm">
+          <span class="badge ${cat === 'secret' ? 'danger' : cat === 'library' ? 'warning' : 'info'}">
+            ${cat}
+          </span>
+          <span class="text-sm">${count} finding${count !== 1 ? 's' : ''}</span>
+        </div>
+      `).join('');
+    }
+    
+    function calculateFilterRisk(matches) {
+      const secretCount = matches.filter(m => m.category === 'secret').length;
+      const highRiskSecrets = matches.filter(m => 
+        m.category === 'secret' && 
+        ['AWS Access Key', 'GitHub Token', 'Private Key', 'Database URI'].includes(m.keyword)
+      ).length;
+      
+      if (highRiskSecrets > 0) return { level: 'Critical', class: 'danger', icon: '⚠️' };
+      if (secretCount > 0) return { level: 'High', class: 'danger', icon: '🔴' };
+      if (matches.length > 10) return { level: 'Medium', class: 'warning', icon: '🟡' };
+      return { level: 'Low', class: 'success', icon: '🟢' };
+    }
+    
+    function renderFindings() {
+      const tbody = document.getElementById('tableBody');
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageData = filteredMatches.slice(startIndex, endIndex);
+      
+      tbody.innerHTML = pageData.map(finding => {
+        const truncatedFile = truncateFilePath(finding.file);
+        const riskBadge = getRiskBadge(finding);
+        
+        return `
+          <tr onclick="showFindingModal(${JSON.stringify(finding).replace(/"/g, '&quot;')})" style="cursor: pointer;">
+            <td>
+              <div class="flex flex-col">
+                <span class="font-mono text-sm">${truncatedFile}</span>
+                <span class="text-xs text-muted">${finding.file}</span>
+              </div>
+            </td>
+            <td><span class="badge secondary">${finding.line_number}</span></td>
+            <td>
+              <div class="flex flex-col gap-xs">
+                ${riskBadge}
+                <strong class="text-sm">${finding.keyword}</strong>
+              </div>
+            </td>
+            <td class="text-sm">${finding.context}</td>
+            <td><span class="badge info">${finding.language}</span></td>
+            <td>
+              <div class="code-snippet" style="max-width: 300px; font-size: 0.75rem;">
+                ${finding.line_content.length > 60 
+                  ? finding.line_content.substring(0, 60) + '...' 
+                  : finding.line_content}
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openInVSCode('${finding.file}', ${finding.line_number})">
+                🔗 Open
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      
+      updatePagination();
+    }
+    
+    function truncateFilePath(path) {
+      const parts = path.split('/');
+      if (parts.length > 3) {
+        return `.../${parts.slice(-2).join('/')}`;
+      }
+      return path;
+    }
+    
+    function getRiskBadge(finding) {
+      if (finding.category === 'secret') {
+        const highRisk = ['AWS Access Key', 'GitHub Token', 'Private Key', 'Database URI'];
+        return highRisk.includes(finding.keyword) 
+          ? '<span class="badge danger">Critical</span>'
+          : '<span class="badge warning">High</span>';
+      }
+      return finding.category === 'library' 
+        ? '<span class="badge info">Medium</span>'
+        : '<span class="badge secondary">Low</span>';
+    }
+    
+    function updatePagination() {
+      const tableInfo = document.getElementById('tableInfo');
+      const pagination = document.getElementById('tablePagination');
+      const totalPages = Math.ceil(filteredMatches.length / itemsPerPage);
+      
+      // Update info
+      const startIndex = (currentPage - 1) * itemsPerPage + 1;
+      const endIndex = Math.min(startIndex + itemsPerPage - 1, filteredMatches.length);
+      tableInfo.textContent = `Showing ${startIndex}-${endIndex} of ${filteredMatches.length} findings`;
+      
+      // Update pagination
+      pagination.innerHTML = '';
+      
+      if (currentPage > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'btn btn-sm btn-secondary';
+        prevBtn.textContent = '← Previous';
+        prevBtn.onclick = () => { currentPage--; renderFindings(); };
+        pagination.appendChild(prevBtn);
+      }
+      
+      for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`;
+        pageBtn.textContent = i;
+        pageBtn.onclick = () => { currentPage = i; renderFindings(); };
+        pagination.appendChild(pageBtn);
+      }
+      
+      if (currentPage < totalPages) {
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn btn-sm btn-secondary';
+        nextBtn.textContent = 'Next →';
+        nextBtn.onclick = () => { currentPage++; renderFindings(); };
+        pagination.appendChild(nextBtn);
+      }
+    }
+    
+    function setupEventListeners() {
+      // Search functionality
+      const searchInput = document.getElementById('detailSearch');
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        filteredMatches = allMatches.filter(match => 
+          match.file.toLowerCase().includes(searchTerm) ||
+          match.keyword.toLowerCase().includes(searchTerm) ||
+          match.line_content.toLowerCase().includes(searchTerm) ||
+          match.language.toLowerCase().includes(searchTerm)
+        );
+        currentPage = 1;
+        renderFindings();
+      });
+      
+      // Sort functionality
+      const sortSelect = document.getElementById('sortBy');
+      sortSelect.addEventListener('change', (e) => {
+        sortField = e.target.value;
+        sortFindings();
+      });
+    }
+    
+    function setupNavigation() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href').startsWith('#')) {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            if (targetSection) {
+              targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        }
+      });
+    }
+    
+    function sortFindings() {
+      filteredMatches.sort((a, b) => {
+        let aVal = a[sortField];
+        let bVal = b[sortField];
+        
+        if (typeof aVal === 'string') {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+        }
+        
+        if (sortOrder === 'asc') {
+          return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+        } else {
+          return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+        }
+      });
+      
+      renderFindings();
+    }
+    
+    function toggleSortOrder() {
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      const btn = document.getElementById('sortOrderBtn');
+      btn.textContent = sortOrder === 'asc' ? '⬆ ASC' : '⬇ DESC';
+      sortFindings();
+    }
+    
+    function generateRecommendations() {
+      const container = document.getElementById('recommendationsContent');
+      const secretMatches = allMatches.filter(m => m.category === 'secret');
+      const libraryMatches = allMatches.filter(m => m.category === 'library');
+      
+      let recommendations = [];
+      
+      if (secretMatches.length > 0) {
+        recommendations.push({
+          title: '🔐 Immediate Secret Remediation Required',
+          priority: 'Critical',
+          items: [
+            'Rotate all exposed credentials immediately',
+            'Remove hardcoded secrets from source code',
+            'Implement secure credential storage (HashiCorp Vault, AWS Secrets Manager)',
+            'Review access logs for potential unauthorized access',
+            'Set up monitoring for credential usage'
+          ]
+        });
+      }
+      
+      if (libraryMatches.length > 0) {
+        recommendations.push({
+          title: '📦 Cryptographic Library Review',
+          priority: 'Medium',
+          items: [
+            'Audit cryptographic implementations for best practices',
+            'Ensure libraries are up-to-date with security patches',
+            'Review cryptographic key management practices',
+            'Document cryptographic standards and policies'
+          ]
+        });
+      }
+      
+      if (new Set(allMatches.map(m => m.file)).size > 10) {
+        recommendations.push({
+          title: '📋 Code Organization',
+          priority: 'Low',
+          items: [
+            'Consider centralizing cryptographic operations',
+            'Implement consistent security practices across files',
+            'Create reusable security utility functions',
+            'Establish code review guidelines for security-related changes'
+          ]
+        });
+      }
+      
+      if (recommendations.length === 0) {
+        recommendations.push({
+          title: '✅ Good Security Posture',
+          priority: 'Info',
+          items: [
+            'Continue regular security scanning',
+            'Keep cryptographic libraries updated',
+            'Monitor for new security vulnerabilities',
+            'Maintain documentation of security practices'
+          ]
+        });
+      }
+      
+      container.innerHTML = recommendations.map(rec => `
+        <div class="card mb-lg" style="border-left: 4px solid var(--${
+          rec.priority === 'Critical' ? 'danger-red' :
+          rec.priority === 'Medium' ? 'warning-orange' :
+          rec.priority === 'Low' ? 'info-cyan' : 'success-green'
+        });">
+          <div class="card-header">
+            <div class="flex items-center gap-sm">
+              <span class="badge ${
+                rec.priority === 'Critical' ? 'danger' :
+                rec.priority === 'Medium' ? 'warning' :
+                rec.priority === 'Low' ? 'info' : 'success'
+              }">${rec.priority}</span>
+              <h4 class="mb-0">${rec.title}</h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="text-sm">
+              ${rec.items.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Utility functions
+    function showFindingModal(finding) {
+      // This would show a detailed modal - for now, just log
+      console.log('Show finding details:', finding);
+    }
+    
+    function openInVSCode(filePath, lineNumber = 1) {
+      const vscodeUrl = `vscode://file${filePath}:${lineNumber}`;
+      window.open(vscodeUrl, '_blank');
+    }
+    
+    function exportFilteredResults() {
+      const exportData = {
+        filter: filter || category,
+        timestamp: new Date().toISOString(),
+        totalResults: allMatches.length,
+        findings: allMatches
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cryptoscan-filtered-${filter || category}-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    function clearFilter() {
+      window.location.href = 'index.html';
     }
   </script>
 </body>

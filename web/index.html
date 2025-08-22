@@ -1,104 +1,462 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cryptoscan Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoScanner - Security Analysis Dashboard</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script defer src="js/theme.js"></script>
   <script defer src="js/dashboard.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
-    }
-    h1 {
-      margin-bottom: 2rem;
-    }
-    h2 {
-      margin-top: 2rem;
-    }
-    .chart-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-    }
-    .chart-container {
-      flex: 1 1 45%;
-      min-width: 300px;
-    }
-    canvas {
-      width: 100% !important;
-      height: auto !important;
-    }
-    table {
-      margin-top: 1rem;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.4rem;
-      text-align: left;
-    }
-    th {
-      background: #f2f2f2;
-    }
-  </style>
 </head>
 <body>
-  <h1>🔐 Cryptoscan Report</h1>
-
-  <div id="summary" style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-    <h3>📊 Summary</h3>
-    <p id="summaryText">Loading scan results...</p>
+  <div class="main-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="mb-lg">
+        <div class="flex items-center gap-sm mb-lg">
+          <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
+          <div>
+            <h3 class="mb-0">CryptoScanner</h3>
+            <p class="text-xs text-muted mb-0">Security Analysis</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="#overview" class="nav-link active">
+              <span class="nav-icon">📊</span>
+              Overview
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#libraries" class="nav-link">
+              <span class="nav-icon">📦</span>
+              Crypto Libraries
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#secrets" class="nav-link">
+              <span class="nav-icon">🚨</span>
+              Hardcoded Secrets
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#keystores" class="nav-link">
+              <span class="nav-icon">🔑</span>
+              Keystore Files
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#commands" class="nav-link">
+              <span class="nav-icon">⚡</span>
+              Key Commands
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#detailed-findings" class="nav-link">
+              <span class="nav-icon">🔍</span>
+              Detailed Findings
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="mt-lg">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mb-sm">Quick Actions</h4>
+            <div class="flex flex-col gap-sm">
+              <button class="btn btn-primary btn-sm" onclick="exportReport()">📄 Export Report</button>
+              <button class="btn btn-secondary btn-sm" onclick="refreshData()">🔄 Refresh Data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="flex items-center gap-md">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
+        <div>
+          <h1 class="mb-0">Security Analysis Dashboard</h1>
+          <p class="text-sm text-muted mb-0" id="scanTimestamp">Last scan: Loading...</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-md">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search findings..." id="globalSearch">
+        </div>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="btn btn-primary" onclick="location.reload()">🔄 Refresh</button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Loading State -->
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <span>Loading security analysis data...</span>
+      </div>
+      
+      <!-- Dashboard Content -->
+      <div id="dashboardContent" class="hidden">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-xl">
+          <!-- Key Metrics -->
+          <div class="metrics-grid">
+            <div class="metric-card" id="totalFindingsCard">
+              <div class="metric-icon info">🔍</div>
+              <div class="metric-value" id="totalFindings">0</div>
+              <div class="metric-label">Total Findings</div>
+            </div>
+            <div class="metric-card" id="secretsCard">
+              <div class="metric-icon danger">🚨</div>
+              <div class="metric-value" id="totalSecrets">0</div>
+              <div class="metric-label">Hardcoded Secrets</div>
+            </div>
+            <div class="metric-card" id="librariesCard">
+              <div class="metric-icon warning">📦</div>
+              <div class="metric-value" id="totalLibraries">0</div>
+              <div class="metric-label">Crypto Libraries</div>
+            </div>
+            <div class="metric-card" id="keystoresCard">
+              <div class="metric-icon info">🔑</div>
+              <div class="metric-value" id="totalKeystores">0</div>
+              <div class="metric-label">Keystore Files</div>
+            </div>
+            <div class="metric-card" id="filesScannedCard">
+              <div class="metric-icon success">📁</div>
+              <div class="metric-value" id="filesScanned">0</div>
+              <div class="metric-label">Files Scanned</div>
+            </div>
+            <div class="metric-card" id="riskScoreCard">
+              <div class="metric-icon" id="riskIcon">📈</div>
+              <div class="metric-value" id="riskScore">-</div>
+              <div class="metric-label">Risk Score</div>
+            </div>
+          </div>
+          
+          <!-- Risk Assessment Summary -->
+          <div class="card mb-lg">
+            <div class="card-header">
+              <h3 class="mb-0">Risk Assessment Summary</h3>
+            </div>
+            <div class="card-body">
+              <div id="riskSummary" class="flex gap-lg">
+                <div class="flex-1">
+                  <h4 class="mb-sm">Security Findings</h4>
+                  <div id="securityBreakdown"></div>
+                </div>
+                <div class="flex-1">
+                  <h4 class="mb-sm">Recommendations</h4>
+                  <ul id="recommendationsList" class="text-sm"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Crypto Libraries Section -->
+        <section id="libraries" class="mb-xl">
+          <h2>📦 Cryptographic Libraries</h2>
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">Library Usage Distribution</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="libraryChartBar"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">Library Types</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="libraryChartPie"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- File Types Distribution -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">File Types with Crypto Usage</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="fileTypeChartBar"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">Language Distribution</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="fileTypeChartPie"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Hardcoded Secrets Section -->
+        <section id="secrets" class="mb-xl">
+          <h2>🚨 Hardcoded Secrets Analysis</h2>
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">Secret Types Distribution</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="secretsChartBar"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-header">
+                <h4 class="mb-0">Severity Breakdown</h4>
+              </div>
+              <div class="chart-body">
+                <canvas id="secretsChartPie"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Detailed Findings Table -->
+        <section id="detailed-findings" class="mb-xl">
+          <div class="card">
+            <div class="card-header">
+              <div class="flex justify-between items-center">
+                <h3 class="mb-0">📋 Detailed Findings</h3>
+                <div class="flex items-center gap-sm">
+                  <select id="categoryFilter" class="btn btn-secondary btn-sm">
+                    <option value="all">All Categories</option>
+                    <option value="library">Libraries</option>
+                    <option value="secret">Secrets</option>
+                    <option value="keystore">Keystores</option>
+                    <option value="key-command">Commands</option>
+                  </select>
+                  <button class="btn btn-secondary btn-sm" onclick="toggleTableView()">📊 Toggle View</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="search-bar mb-lg">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search by file, keyword, or content..." id="tableSearch">
+              </div>
+              
+              <div class="table-container">
+                <table class="table" id="findingsTable">
+                  <thead>
+                    <tr>
+                      <th>Severity</th>
+                      <th>Category</th>
+                      <th>Type</th>
+                      <th>File</th>
+                      <th>Line</th>
+                      <th>Language</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="findingsTableBody">
+                    <!-- Data will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="flex justify-between items-center mt-lg">
+                <div class="text-sm text-muted" id="tableInfo">
+                  Showing 0 of 0 findings
+                </div>
+                <div class="flex items-center gap-sm" id="tablePagination">
+                  <!-- Pagination buttons will be added by JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
   </div>
-
-  <h2>📦 Crypto Libraries</h2>
-  <div class="chart-group">
-    <div class="chart-container">
-      <canvas id="libraryChartBar"></canvas>
+  
+  <!-- Mobile Sidebar -->
+  <aside id="mobile-sidebar" class="mobile-sidebar">
+    <div class="mb-lg">
+      <div class="flex items-center justify-between mb-lg">
+        <div class="flex items-center gap-sm">
+          <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
+          <div>
+            <h3 class="mb-0">CryptoScanner</h3>
+            <p class="text-xs text-muted mb-0">Security Analysis</p>
+          </div>
+        </div>
+        <button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+      </div>
     </div>
-    <div class="chart-container">
-      <canvas id="libraryChartPie"></canvas>
+    
+    <nav>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#overview" class="nav-link active">
+            <span class="nav-icon">📊</span>
+            Overview
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#libraries" class="nav-link">
+            <span class="nav-icon">📦</span>
+            Crypto Libraries
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#secrets" class="nav-link">
+            <span class="nav-icon">🚨</span>
+            Hardcoded Secrets
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#keystores" class="nav-link">
+            <span class="nav-icon">🔑</span>
+            Keystore Files
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#commands" class="nav-link">
+            <span class="nav-icon">⚡</span>
+            Key Commands
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#detailed-findings" class="nav-link">
+            <span class="nav-icon">🔍</span>
+            Detailed Findings
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="mt-lg">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-sm">Quick Actions</h4>
+          <div class="flex flex-col gap-sm">
+            <button class="btn btn-primary btn-sm" onclick="exportReport()">📄 Export Report</button>
+            <button class="btn btn-secondary btn-sm" onclick="refreshData()">🔄 Refresh Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay" class="mobile-overlay"></div>
+  
+  <!-- Modal for Finding Details -->
+  <div id="findingModal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeFindingModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="mb-0">Finding Details</h3>
+        <button class="modal-close" onclick="closeFindingModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="findingModalBody">
+        <!-- Details will be populated by JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeFindingModal()">Close</button>
+        <button class="btn btn-primary" id="openInVSCode">Open in VS Code</button>
+      </div>
     </div>
   </div>
-
-  <h2>🗂️ File Types (Library Usage)</h2>
-  <div class="chart-group">
-    <div class="chart-container">
-      <canvas id="fileTypeChartBar"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="fileTypeChartPie"></canvas>
-    </div>
-  </div>
-
-  <h2>🚨 Hardcoded Secrets</h2>
-  <div class="chart-group">
-    <div class="chart-container">
-      <canvas id="secretsChartBar"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="secretsChartPie"></canvas>
-    </div>
-  </div>
-
-  <h2>🔎 Other Findings</h2>
-  <div id="artefactSection">
-    <table id="artefactTable">
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Keyword</th>
-          <th>Context</th>
-          <th>File</th>
-          <th>Line</th>
-        </tr>
-      </thead>
-      <tbody id="artefactBody"></tbody>
-    </table>
-  </div>
+  
+  <style>
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+      background-color: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      max-width: 800px;
+      max-height: 90vh;
+      width: 90%;
+      overflow: hidden;
+      position: relative;
+      z-index: 1001;
+    }
+    
+    .modal-header {
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-body {
+      padding: var(--spacing-lg);
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .modal-footer {
+      padding: var(--spacing-lg);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-sm);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-500);
+    }
+    
+    .modal-close:hover {
+      color: var(--gray-700);
+    }
+  </style>
 </body>
 </html>
