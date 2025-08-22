@@ -573,6 +573,69 @@ body {
   margin-right: var(--spacing-sm);
 }
 
+/* Scan Location Form Styles */
+.scan-location-form {
+  display: flex;
+  align-items: center;
+  margin-right: var(--spacing-md);
+}
+
+.scan-icon {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-right: var(--spacing-sm);
+}
+
+.scan-input {
+  width: 300px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  margin-right: var(--spacing-sm);
+}
+
+.scan-input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: var(--bg-primary);
+}
+
+.scan-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Success Button for Scan */
+.btn-success {
+  background-color: var(--success-green);
+  color: white;
+  border: 1px solid var(--success-green);
+  font-weight: 500;
+}
+
+.btn-success:hover {
+  background-color: #047857;
+  border-color: #047857;
+  transform: translateY(-1px);
+}
+
+.btn-success:active {
+  background-color: #065f46;
+  border-color: #065f46;
+  transform: translateY(0);
+}
+
+.btn-success:disabled {
+  background-color: var(--secondary-gray-light);
+  border-color: var(--secondary-gray-light);
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Utility Classes */
 .flex {
   display: flex;

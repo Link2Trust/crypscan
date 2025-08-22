@@ -9,6 +9,8 @@ let filteredData = [];
 let currentPage = 1;
 const itemsPerPage = 25;
 let sortConfig = { field: null, direction: 'asc' };
+let scanInProgress = false;
+let scanStatusInterval = null;
 
 // Color schemes for professional look
 const colorSchemes = {
@@ -913,4 +915,236 @@ function toggleTableView() {
   // This could toggle between table and card view
   console.log('Toggle table view - feature to be implemented');
 }
+
+// ================================
+// SCAN INITIATION AND TRACKING
+// ================================
+
+// Initiate a new scan
+function initiateScan() {
+  if (scanInProgress) {
+    alert('A scan is already in progress. Please wait for it to complete.');
+    return;
+  }
+  
+  const scanInput = document.getElementById('scanLocationInput');
+  const scanButton = document.getElementById('scanButton');
+  
+  if (!scanInput || !scanInput.value.trim()) {
+    alert('Please enter a location to scan (local path or repository URL)');
+    return;
+  }
+  
+  const location = scanInput.value.trim();
+  
+  // Validate input format
+  if (!isValidScanLocation(location)) {
+    alert('Please enter a valid local path (e.g., /path/to/folder) or repository URL (e.g., https://github.com/user/repo.git)');
+    return;
+  }
+  
+  // Update UI to show scan in progress
+  scanInProgress = true;
+  scanButton.disabled = true;
+  scanButton.innerHTML = '⏳ Scanning...';
+  scanInput.disabled = true;
+  
+  // Show loading state
+  showScanProgress('Initiating scan...');
+  
+  // Send scan request to backend
+  fetch('/api/scan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      location: location,
+      timestamp: new Date().toISOString()
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Scan initiated successfully:', data);
+    
+    if (data.scanId) {
+      // Start polling for scan status
+      startScanStatusPolling(data.scanId);
+    } else {
+      throw new Error('No scan ID returned from server');
+    }
+  })
+  .catch(error => {
+    console.error('Error initiating scan:', error);
+    alert('Failed to initiate scan: ' + error.message);
+    resetScanUI();
+  });
+}
+
+// Validate scan location format
+function isValidScanLocation(location) {
+  // Check for local path (starts with / or ~/ or ./ or ../ or drive letter on Windows)
+  const localPathRegex = /^(\/|~\/|\.\.\/|\.\/).*|^[a-zA-Z]:\\.*$/;
+  
+  // Check for repository URL (git, https, ssh)
+  const repoUrlRegex = /^(https?:\/\/|git@|ssh:\/\/).*\.(git|com|org|net).*$/i;
+  
+  return localPathRegex.test(location) || repoUrlRegex.test(location);
+}
+
+// Show scan progress in UI
+function showScanProgress(message) {
+  const loadingState = document.getElementById('loadingState');
+  const dashboardContent = document.getElementById('dashboardContent');
+  
+  if (loadingState && dashboardContent) {
+    loadingState.innerHTML = `
+      <div class="spinner"></div>
+      <span>${message}</span>
+      <div class="mt-md">
+        <button class="btn btn-secondary" onclick="cancelScan()">Cancel Scan</button>
+      </div>
+    `;
+    loadingState.classList.remove('hidden');
+    dashboardContent.classList.add('hidden');
+  }
+}
+
+// Start polling for scan status
+function startScanStatusPolling(scanId) {
+  console.log('Starting scan status polling for ID:', scanId);
+  
+  scanStatusInterval = setInterval(() => {
+    checkScanStatus(scanId);
+  }, 2000); // Poll every 2 seconds
+  
+  // Also check immediately
+  checkScanStatus(scanId);
+}
+
+// Check scan status
+function checkScanStatus(scanId) {
+  fetch(`/api/scan/status/${scanId}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Scan status:', data);
+      
+      if (data.status === 'completed') {
+        // Scan completed successfully
+        clearInterval(scanStatusInterval);
+        scanStatusInterval = null;
+        
+        showScanProgress('Scan completed! Loading results...');
+        
+        // Reload data and refresh dashboard
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+        
+      } else if (data.status === 'failed') {
+        // Scan failed
+        clearInterval(scanStatusInterval);
+        scanStatusInterval = null;
+        
+        console.error('Scan failed:', data.error);
+        alert('Scan failed: ' + (data.error || 'Unknown error'));
+        resetScanUI();
+        
+      } else if (data.status === 'running') {
+        // Scan still in progress
+        const progress = data.progress || 'Scanning in progress...';
+        showScanProgress(progress);
+        
+      } else {
+        // Unknown status
+        console.warn('Unknown scan status:', data.status);
+      }
+    })
+    .catch(error => {
+      console.error('Error checking scan status:', error);
+      
+      // If we get repeated errors, stop polling and reset UI
+      if (scanStatusInterval) {
+        clearInterval(scanStatusInterval);
+        scanStatusInterval = null;
+        alert('Lost connection to scan process. Please refresh the page to check results.');
+        resetScanUI();
+      }
+    });
+}
+
+// Cancel ongoing scan
+function cancelScan() {
+  if (scanStatusInterval) {
+    clearInterval(scanStatusInterval);
+    scanStatusInterval = null;
+  }
+  
+  // Try to cancel the scan on the server
+  fetch('/api/scan/cancel', {
+    method: 'POST'
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Scan cancelled');
+    }
+  })
+  .catch(error => {
+    console.error('Error cancelling scan:', error);
+  })
+  .finally(() => {
+    resetScanUI();
+  });
+}
+
+// Reset scan UI to initial state
+function resetScanUI() {
+  scanInProgress = false;
+  
+  const scanInput = document.getElementById('scanLocationInput');
+  const scanButton = document.getElementById('scanButton');
+  const loadingState = document.getElementById('loadingState');
+  const dashboardContent = document.getElementById('dashboardContent');
+  
+  if (scanInput) {
+    scanInput.disabled = false;
+  }
+  
+  if (scanButton) {
+    scanButton.disabled = false;
+    scanButton.innerHTML = '🚀 Scan';
+  }
+  
+  if (loadingState && dashboardContent) {
+    loadingState.classList.add('hidden');
+    dashboardContent.classList.remove('hidden');
+  }
+}
+
+// Handle Enter key in scan input
+document.addEventListener('DOMContentLoaded', function() {
+  const scanInput = document.getElementById('scanLocationInput');
+  if (scanInput) {
+    scanInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        initiateScan();
+      }
+    });
+  }
+});
+
+// Make functions globally available
+window.initiateScan = initiateScan;
+window.cancelScan = cancelScan;
+window.resetScanUI = resetScanUI;
 
