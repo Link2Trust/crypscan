@@ -84,7 +84,6 @@ function createChart(elementId, type, data, options = {}) {
   // Get current theme
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const textColor = isDark ? '#f9fafb' : '#111827';
-  const gridColor = isDark ? '#374151' : '#e5e7eb';
   
   const defaultOptions = {
     responsive: true,
@@ -649,8 +648,14 @@ function showFindingDetails(finding) {
   
   if (!modal || !modalBody) return;
   
-  const riskLevel = finding.category === 'secret' ? 'High' : 
-                   finding.category === 'library' ? 'Medium' : 'Low';
+  let riskLevel;
+  if (finding.category === 'secret') {
+    riskLevel = 'High';
+  } else if (finding.category === 'library') {
+    riskLevel = 'Medium';
+  } else {
+    riskLevel = 'Low';
+  }
   
   modalBody.innerHTML = `
     <div class="mb-lg">

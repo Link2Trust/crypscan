@@ -19,7 +19,7 @@
 <body>
   <div class="main-layout">
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+<aside class="sidebar" aria-label="Main sidebar">
       <div class="mb-lg">
         <div class="flex items-center gap-sm mb-lg">
           <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
@@ -30,7 +30,7 @@
         </div>
       </div>
       
-      <nav>
+<nav aria-label="Main navigation">
         <ul class="nav-menu">
           <li class="nav-item">
             <a href="index.html" class="nav-link">
@@ -75,7 +75,7 @@
     <!-- Header -->
     <header class="header">
       <div class="flex items-center gap-md">
-        <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
+<button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle mobile navigation">☰</button>
         <div>
           <h1 class="mb-0">Finding Details</h1>
           <p class="text-sm text-muted mb-0" id="filterInfo">Loading filter information...</p>
@@ -84,9 +84,9 @@
       <div class="flex items-center gap-md">
         <div class="search-bar">
           <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder="Search in results..." id="detailSearch">
+<input type="text" class="search-input" placeholder="Search in results..." id="detailSearch" aria-label="Detail search input">
         </div>
-        <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+<button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">🌙</button>
         <button class="btn btn-secondary" onclick="window.history.back()">⬅ Back</button>
       </div>
     </header>
@@ -160,7 +160,7 @@
               <div class="flex justify-between items-center">
                 <h3 class="mb-0">📋 Detailed Findings</h3>
                 <div class="flex items-center gap-sm">
-                  <select id="sortBy" class="btn btn-secondary btn-sm">
+<select id="sortBy" class="btn btn-secondary btn-sm" aria-label="Sort by selector">
                     <option value="file">Sort by File</option>
                     <option value="line_number">Sort by Line</option>
                     <option value="keyword">Sort by Keyword</option>
@@ -221,7 +221,7 @@
   </div>
   
   <!-- Mobile Sidebar -->
-  <aside id="mobile-sidebar" class="mobile-sidebar">
+<aside id="mobile-sidebar" class="mobile-sidebar" aria-label="Mobile sidebar">
     <div class="mb-lg">
       <div class="flex items-center justify-between mb-lg">
         <div class="flex items-center gap-sm">
@@ -231,11 +231,11 @@
             <p class="text-xs text-muted mb-0">Finding Details</p>
           </div>
         </div>
-        <button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+<button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">🌙</button>
       </div>
     </div>
     
-    <nav>
+<nav aria-label="Mobile navigation">
       <ul class="nav-menu">
         <li class="nav-item">
           <a href="index.html" class="nav-link">
@@ -418,14 +418,25 @@
         categories[match.category] = (categories[match.category] || 0) + 1;
       });
       
-      distributionDiv.innerHTML = Object.entries(categories).map(([cat, count]) => `
-        <div class="flex items-center gap-sm mb-sm">
-          <span class="badge ${cat === 'secret' ? 'danger' : cat === 'library' ? 'warning' : 'info'}">
-            ${cat}
-          </span>
-          <span class="text-sm">${count} finding${count !== 1 ? 's' : ''}</span>
-        </div>
-      `).join('');
+      distributionDiv.innerHTML = Object.entries(categories).map(([cat, count]) => {
+        let badgeClass = 'info';
+        if (cat === 'secret') {
+          badgeClass = 'danger';
+        } else if (cat === 'library') {
+          badgeClass = 'warning';
+        }
+        
+        const pluralSuffix = count !== 1 ? 's' : '';
+        
+        return `
+          <div class="flex items-center gap-sm mb-sm">
+            <span class="badge ${badgeClass}">
+              ${cat}
+            </span>
+            <span class="text-sm">${count} finding${pluralSuffix}</span>
+          </div>
+        `;
+      }).join('');
     }
     
     function calculateFilterRisk(matches) {
@@ -598,11 +609,14 @@
           bVal = bVal.toLowerCase();
         }
         
-        if (sortOrder === 'asc') {
-          return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-        } else {
-          return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+        let comparison = 0;
+        if (aVal < bVal) {
+          comparison = -1;
+        } else if (aVal > bVal) {
+          comparison = 1;
         }
+        
+        return sortOrder === 'asc' ? comparison : -comparison;
       });
       
       renderFindings();
@@ -675,29 +689,37 @@
         });
       }
       
-      container.innerHTML = recommendations.map(rec => `
-        <div class="card mb-lg" style="border-left: 4px solid var(--${
-          rec.priority === 'Critical' ? 'danger-red' :
-          rec.priority === 'Medium' ? 'warning-orange' :
-          rec.priority === 'Low' ? 'info-cyan' : 'success-green'
-        });">
-          <div class="card-header">
-            <div class="flex items-center gap-sm">
-              <span class="badge ${
-                rec.priority === 'Critical' ? 'danger' :
-                rec.priority === 'Medium' ? 'warning' :
-                rec.priority === 'Low' ? 'info' : 'success'
-              }">${rec.priority}</span>
-              <h4 class="mb-0">${rec.title}</h4>
+      container.innerHTML = recommendations.map(rec => {
+        let borderColor = 'success-green';
+        let badgeClass = 'success';
+        
+        if (rec.priority === 'Critical') {
+          borderColor = 'danger-red';
+          badgeClass = 'danger';
+        } else if (rec.priority === 'Medium') {
+          borderColor = 'warning-orange';
+          badgeClass = 'warning';
+        } else if (rec.priority === 'Low') {
+          borderColor = 'info-cyan';
+          badgeClass = 'info';
+        }
+        
+        return `
+          <div class="card mb-lg" style="border-left: 4px solid var(--${borderColor});">
+            <div class="card-header">
+              <div class="flex items-center gap-sm">
+                <span class="badge ${badgeClass}">${rec.priority}</span>
+                <h4 class="mb-0">${rec.title}</h4>
+              </div>
+            </div>
+            <div class="card-body">
+              <ul class="text-sm">
+                ${rec.items.map(item => `<li>${item}</li>`).join('')}
+              </ul>
             </div>
           </div>
-          <div class="card-body">
-            <ul class="text-sm">
-              ${rec.items.map(item => `<li>${item}</li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
     
     // Utility functions

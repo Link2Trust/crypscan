@@ -89,75 +89,111 @@ fn has_keystore_extension(path: &Path) -> bool {
 }
 
 pub fn scan_directory(config: &Config) -> io::Result<()> {
-    let skip_mime_prefixes = vec!["text/markdown", "text/plain", "application/log"];
+    let entries = collect_scannable_entries(&config.path);
+    let pb = create_progress_bar(entries.len());
+    let findings = scan_entries_parallel(entries, config, &pb);
+    
+    pb.finish_with_message("✅ Scan complete");
+    write_findings_to_output(&findings)?;
+    
+    Ok(())
+}
 
-    let entries: Vec<_> = WalkDir::new(&config.path)
+/// Collect all scannable entries from the given path
+fn collect_scannable_entries(path: &str) -> Vec<walkdir::DirEntry> {
+    WalkDir::new(path)
         .into_iter()
         .filter_map(Result::ok)
         .filter(|e| e.path().is_file())
         .filter(is_not_in_ignored_folder)
         .filter(|e| is_scannable_file(e.path()))
-        .collect();
+        .collect()
+}
 
-    let pb = ProgressBar::new(entries.len() as u64);
+/// Create and configure the progress bar
+fn create_progress_bar(total: usize) -> ProgressBar {
+    let pb = ProgressBar::new(total as u64);
     pb.set_style(
         ProgressStyle::default_bar()
             .template("🔍 Scanning [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} files")
             .unwrap()
             .progress_chars("=>-"),
     );
+    pb
+}
 
-    let findings: Vec<Finding> = entries
+/// Scan entries in parallel and collect findings
+fn scan_entries_parallel(entries: Vec<walkdir::DirEntry>, config: &Config, pb: &ProgressBar) -> Vec<Finding> {
+    entries
         .par_iter()
-        .filter_map(|entry| {
-            let path = entry.path();
-
-            if config.use_mime_filter {
-                if let Some(mime) = detect_mime_type(path) {
-                    if skip_mime_prefixes.iter().any(|prefix| mime.starts_with(prefix)) {
-                        pb.inc(1);
-                        return None;
-                    }
-                }
-            }
-
-            // Collect all findings from all scanners
-            let mut results = Vec::new();
-
-            if let Some(keystore) = scan_keystore_file(path) {
-                results.push(keystore);
-            }
-
-            if is_supported_code_file(path) {
-                results.extend(crate::scanner::code::scan_file(path));
-                results.extend(scan_key_commands(path));
-                
-                // Scan for secrets unless explicitly skipped
-                if !config.skip_secrets {
-                    results.extend(crate::scanner::secrets::scan_file(path));
-                }
-            }
-            
-            // Scan config files for secrets (but not for crypto libraries) unless explicitly skipped
-            if is_config_file(path) && !config.skip_secrets {
-                results.extend(crate::scanner::secrets::scan_file(path));
-            }
-
-            pb.inc(1);
-            Some(results)
-        })
+        .filter_map(|entry| scan_single_file(entry.path(), config, pb))
         .flatten()
-        .collect();
+        .collect()
+}
 
-    pb.finish_with_message("✅ Scan complete");
+/// Scan a single file and return findings
+fn scan_single_file(path: &Path, config: &Config, pb: &ProgressBar) -> Option<Vec<Finding>> {
+    if should_skip_mime_filter(path, config) {
+        pb.inc(1);
+        return None;
+    }
 
-    // Ensure output directory exists
+    let results = collect_findings_from_scanners(path, config);
+    pb.inc(1);
+    Some(results)
+}
+
+/// Check if file should be skipped due to MIME filtering
+fn should_skip_mime_filter(path: &Path, config: &Config) -> bool {
+    if !config.use_mime_filter {
+        return false;
+    }
+    
+    let skip_mime_prefixes = ["text/markdown", "text/plain", "application/log"];
+    
+    if let Some(mime) = detect_mime_type(path) {
+        skip_mime_prefixes.iter().any(|prefix| mime.starts_with(prefix))
+    } else {
+        false
+    }
+}
+
+/// Collect findings from all relevant scanners for a single file
+fn collect_findings_from_scanners(path: &Path, config: &Config) -> Vec<Finding> {
+    let mut results = Vec::new();
+
+    // Scan for keystore files
+    if let Some(keystore) = scan_keystore_file(path) {
+        results.push(keystore);
+    }
+
+    // Scan code files
+    if is_supported_code_file(path) {
+        results.extend(crate::scanner::code::scan_file(path));
+        results.extend(scan_key_commands(path));
+        
+        if !config.skip_secrets {
+            results.extend(crate::scanner::secrets::scan_file(path));
+        }
+    }
+    
+    // Scan config files for secrets only
+    if is_config_file(path) && !config.skip_secrets {
+        results.extend(crate::scanner::secrets::scan_file(path));
+    }
+
+    results
+}
+
+/// Write findings to the output file
+fn write_findings_to_output(findings: &[Finding]) -> io::Result<()> {
     let output_path = "web/data/findings.json";
+    
     if let Some(parent) = Path::new(output_path).parent() {
         fs::create_dir_all(parent)?;
     }
 
-    write_report_to_json(&findings, output_path)?;
+    write_report_to_json(findings, output_path)?;
     println!("✅ Findings written to {}", output_path);
     
     Ok(())

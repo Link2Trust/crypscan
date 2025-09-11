@@ -237,6 +237,10 @@ fn execute_scan(scan_id: String, location: String, tracker: ScanTracker) {
         serve: false,
         port: 8080,
         web_dir: "./web".to_string(),
+        cbom: false,
+        cbom_format: "json".to_string(),
+        cbom_output: "./cbom.json".to_string(),
+        app_name: None,
     };
     
     // Handle different location types

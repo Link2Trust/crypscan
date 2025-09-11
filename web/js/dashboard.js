@@ -77,7 +77,6 @@ function getRiskLevel(score) {
 // Navigation handling
 function initializeNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('main section');
   
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -401,9 +400,66 @@ window.closeFindingModal = function() {
   const modal = document.getElementById('findingModal');
   if (modal) {
     modal.classList.add('hidden');
+    
+    // Restore focus to the previously focused element for accessibility
+    if (modal.previouslyFocusedElement && typeof modal.previouslyFocusedElement.focus === 'function') {
+      try {
+        modal.previouslyFocusedElement.focus();
+      } catch (error) {
+        // If focus fails, focus the document body as fallback
+        console.warn('Failed to restore focus:', error.message);
+        document.body.focus();
+      }
+    }
+    
     console.log('Modal closed via global function');
   }
 };
+
+// Handle keyboard events on modal overlay for accessibility
+window.handleOverlayKeydown = function(event) {
+  // Close modal on Enter or Space key
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    window.closeFindingModal();
+    console.log('Modal closed via keyboard interaction');
+  }
+  // Also handle Escape key
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    window.closeFindingModal();
+  }
+};
+
+// Focus trap for modal accessibility
+window.trapFocus = function(event) {
+  const modal = document.getElementById('findingModal');
+  if (!modal || modal.classList.contains('hidden')) return;
+  
+  const focusableElements = modal.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+  
+  if (event.key === 'Tab') {
+    if (event.shiftKey) {
+      // Shift + Tab: moving backwards
+      if (document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+      }
+    } else if (document.activeElement === lastFocusable) {
+      // Tab: moving forwards
+      event.preventDefault();
+      firstFocusable.focus();
+    }
+  }
+};
+
+// Add event listener for focus trapping
+document.addEventListener('keydown', window.trapFocus);
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -784,12 +840,6 @@ function setupGlobalSearch(data) {
     const searchTerm = e.target.value.toLowerCase();
     if (searchTerm.length < 2) return;
     
-    const results = data.filter(item => 
-      item.file.toLowerCase().includes(searchTerm) ||
-      item.keyword.toLowerCase().includes(searchTerm) ||
-      item.line_content.toLowerCase().includes(searchTerm)
-    );
-    
     // Update table with search results
     const tableSearch = document.getElementById('tableSearch');
     if (tableSearch) {
@@ -823,8 +873,12 @@ function showFindingDetails(finding) {
   
   if (!modal || !modalBody) return;
   
-  const riskLevel = finding.category === 'secret' ? 'High' : 
-                   finding.category === 'library' ? 'Medium' : 'Low';
+  let riskLevel = 'Low';
+  if (finding.category === 'secret') {
+    riskLevel = 'High';
+  } else if (finding.category === 'library') {
+    riskLevel = 'Medium';
+  }
   
   modalBody.innerHTML = `
     <div class="mb-lg">
@@ -871,6 +925,18 @@ function showFindingDetails(finding) {
   }
   
   modal.classList.remove('hidden');
+  
+  // Focus management for accessibility
+  // Store the currently focused element to restore focus later
+  modal.previouslyFocusedElement = document.activeElement;
+  
+  // Set focus to the modal close button for keyboard accessibility
+  setTimeout(() => {
+    const closeButton = modal.querySelector('.modal-close');
+    if (closeButton) {
+      closeButton.focus();
+    }
+  }, 100);
 }
 
 function closeFindingModal() {
@@ -930,7 +996,7 @@ function initiateScan() {
   const scanInput = document.getElementById('scanLocationInput');
   const scanButton = document.getElementById('scanButton');
   
-  if (!scanInput || !scanInput.value.trim()) {
+  if (!scanInput?.value?.trim()) {
     alert('Please enter a location to scan (local path or repository URL)');
     return;
   }

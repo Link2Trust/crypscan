@@ -155,62 +155,114 @@ fn get_language_from_path(path: &Path) -> String {
 
 /// Scans a source file for hardcoded secrets using optimized regex patterns
 pub fn scan_file(path: &Path) -> Vec<Finding> {
-    let mut findings = Vec::new();
+    let content = match read_file_to_string(path) {
+        Ok(content) => content,
+        Err(_) => return Vec::new(),
+    };
+
+    if should_skip_large_file(&content) {
+        return Vec::new();
+    }
+
     let language = get_language_from_path(path);
+    scan_content_for_secrets(&content, path, &language)
+}
 
-    if let Ok(content) = read_file_to_string(path) {
-        // Skip very large files to prevent regex engine issues
-        if content.len() > 10_000_000 { // 10MB limit
-            return findings;
+/// Check if file should be skipped due to size
+fn should_skip_large_file(content: &str) -> bool {
+    content.len() > 10_000_000 // 10MB limit
+}
+
+/// Scan file content for secrets and return findings
+fn scan_content_for_secrets(content: &str, path: &Path, language: &str) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for (line_num, line) in content.lines().enumerate() {
+        if should_skip_line(line) {
+            continue;
         }
-        
-        for (line_num, line) in content.lines().enumerate() {
-            // Skip comment lines to reduce false positives
-            if is_comment_line(line) {
-                continue;
-            }
-            
-            // Skip very long lines to prevent regex engine issues
-            if line.len() > 10_000 {
-                continue;
-            }
 
-            // Use the pre-compiled regex patterns from lazy_static
-            for (regex, secret_type, description, _severity) in SECRET_PATTERNS.iter() {
-                // Use safe regex matching to prevent crashes
-                for capture in regex.captures_iter(line) {
-                    // Try to get the actual secret value from capture groups
-                    let secret_value = if capture.len() > 2 {
-                        capture.get(2).map(|m| m.as_str()).unwrap_or("").to_string()
-                    } else if capture.len() > 1 {
-                        capture.get(1).map(|m| m.as_str()).unwrap_or("").to_string()
-                    } else {
-                        capture.get(0).map(|m| m.as_str()).unwrap_or("").to_string()
-                    };
-
-                    // Skip if it's likely a false positive
-                    if is_likely_false_positive(line, &secret_value) {
-                        continue;
-                    }
-
-                    findings.push(Finding {
-                        file: path.display().to_string(),
-                        line_number: line_num + 1,
-                        line_content: line.to_string(),
-                        match_type: "secret".to_string(),
-                        keyword: secret_type.to_string(),
-                        context: description.to_string(),
-                        version: None,
-                        language: language.clone(),
-                        source: "hardcoded".to_string(),
-                        category: "secret".to_string(),
-                    });
-                }
-            }
-        }
+        findings.extend(scan_line_for_secrets(line, line_num, path, language));
     }
 
     findings
+}
+
+/// Check if a line should be skipped during scanning
+fn should_skip_line(line: &str) -> bool {
+    is_comment_line(line) || line.len() > 10_000
+}
+
+/// Scan a single line for secret patterns
+fn scan_line_for_secrets(line: &str, line_num: usize, path: &Path, language: &str) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for (regex, secret_type, description, _severity) in SECRET_PATTERNS.iter() {
+        findings.extend(process_regex_matches(regex, line, line_num, path, language, secret_type, description));
+    }
+
+    findings
+}
+
+/// Process all matches for a single regex pattern
+fn process_regex_matches(
+    regex: &regex::Regex, 
+    line: &str, 
+    line_num: usize, 
+    path: &Path, 
+    language: &str,
+    secret_type: &str, 
+    description: &str
+) -> Vec<Finding> {
+    let mut findings = Vec::new();
+
+    for capture in regex.captures_iter(line) {
+        let secret_value = extract_secret_value(&capture);
+        
+        if is_likely_false_positive(line, &secret_value) {
+            continue;
+        }
+
+        findings.push(create_secret_finding(
+            path, line_num, line, secret_type, description, language
+        ));
+    }
+
+    findings
+}
+
+/// Extract the secret value from regex capture groups
+fn extract_secret_value(capture: &regex::Captures) -> String {
+    if capture.len() > 2 {
+        capture.get(2).map(|m| m.as_str()).unwrap_or("").to_string()
+    } else if capture.len() > 1 {
+        capture.get(1).map(|m| m.as_str()).unwrap_or("").to_string()
+    } else {
+        capture.get(0).map(|m| m.as_str()).unwrap_or("").to_string()
+    }
+}
+
+/// Create a Finding struct for a detected secret
+fn create_secret_finding(
+    path: &Path, 
+    line_num: usize, 
+    line: &str, 
+    secret_type: &str, 
+    description: &str,
+    language: &str
+) -> Finding {
+    Finding {
+        file: path.display().to_string(),
+        line_number: line_num + 1,
+        line_content: line.to_string(),
+        match_type: "secret".to_string(),
+        keyword: secret_type.to_string(),
+        context: description.to_string(),
+        version: None,
+        language: language.to_string(),
+        source: "hardcoded".to_string(),
+        category: "secret".to_string(),
+    }
 }
 
 #[cfg(test)]

@@ -23,7 +23,7 @@
 <body>
   <div class="main-layout">
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+<aside class="sidebar" aria-label="Main sidebar">
       <div class="mb-lg">
         <div class="flex items-center gap-sm mb-lg">
           <div class="metric-icon info" style="width: 2.5rem; height: 2.5rem; font-size: 1.25rem; margin: 0;">🔐</div>
@@ -34,7 +34,7 @@
         </div>
       </div>
       
-      <nav>
+<nav aria-label="Main navigation">
         <ul class="nav-menu">
           <li class="nav-item">
             <a href="#overview" class="nav-link active">
@@ -91,7 +91,7 @@
     <!-- Header -->
     <header class="header">
       <div class="flex items-center gap-md">
-        <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
+<button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle mobile navigation">☰</button>
         <div>
           <h1 class="mb-0">Security Analysis Dashboard</h1>
           <p class="text-sm text-muted mb-0" id="scanTimestamp">Last scan: Loading...</p>
@@ -101,15 +101,15 @@
         <div class="scan-location-form">
           <div class="flex items-center gap-sm">
             <span class="scan-icon">📁</span>
-            <input type="text" class="scan-input" placeholder="Enter path or repo URL to scan..." id="scanLocationInput">
+<input type="text" class="scan-input" placeholder="Enter path or repo URL to scan..." id="scanLocationInput" aria-label="Scan location input">
             <button class="btn btn-success" id="scanButton" onclick="initiateScan()">🚀 Scan</button>
           </div>
         </div>
         <div class="search-bar">
           <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder="Search findings..." id="globalSearch">
+<input type="text" class="search-input" placeholder="Search findings..." id="globalSearch" aria-label="Global search input">
         </div>
-        <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+<button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">🌙</button>
         <button class="btn btn-primary" onclick="location.reload()">🔄 Refresh</button>
       </div>
     </header>
@@ -189,7 +189,7 @@
                 <h4 class="mb-0">Library Usage Distribution</h4>
               </div>
               <div class="chart-body">
-                <canvas id="libraryChartBar"></canvas>
+<canvas id="libraryChartBar" aria-label="Library usage distribution chart"></canvas>
               </div>
             </div>
             <div class="chart-card">
@@ -197,7 +197,7 @@
                 <h4 class="mb-0">Library Types</h4>
               </div>
               <div class="chart-body">
-                <canvas id="libraryChartPie"></canvas>
+<canvas id="libraryChartPie" aria-label="Library types pie chart"></canvas>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@
                 <h4 class="mb-0">File Types with Crypto Usage</h4>
               </div>
               <div class="chart-body">
-                <canvas id="fileTypeChartBar"></canvas>
+<canvas id="fileTypeChartBar" aria-label="File types with crypto usage chart"></canvas>
               </div>
             </div>
             <div class="chart-card">
@@ -217,7 +217,7 @@
                 <h4 class="mb-0">Language Distribution</h4>
               </div>
               <div class="chart-body">
-                <canvas id="fileTypeChartPie"></canvas>
+<canvas id="fileTypeChartPie" aria-label="Language distribution pie chart"></canvas>
               </div>
             </div>
           </div>
@@ -232,7 +232,7 @@
                 <h4 class="mb-0">Secret Types Distribution</h4>
               </div>
               <div class="chart-body">
-                <canvas id="secretsChartBar"></canvas>
+<canvas id="secretsChartBar" aria-label="Secret types distribution chart"></canvas>
               </div>
             </div>
             <div class="chart-card">
@@ -240,7 +240,7 @@
                 <h4 class="mb-0">Severity Breakdown</h4>
               </div>
               <div class="chart-body">
-                <canvas id="secretsChartPie"></canvas>
+<canvas id="secretsChartPie" aria-label="Severity breakdown pie chart"></canvas>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@
               <div class="flex justify-between items-center">
                 <h3 class="mb-0">📋 Detailed Findings</h3>
                 <div class="flex items-center gap-sm">
-                  <select id="categoryFilter" class="btn btn-secondary btn-sm">
+<select id="categoryFilter" class="btn btn-secondary btn-sm" aria-label="Category filter">
                     <option value="all">All Categories</option>
                     <option value="library">Libraries</option>
                     <option value="secret">Secrets</option>
@@ -267,7 +267,7 @@
             <div class="card-body">
               <div class="search-bar mb-lg">
                 <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Search by file, keyword, or content..." id="tableSearch">
+<input type="text" class="search-input" placeholder="Search by file, keyword, or content..." id="tableSearch" aria-label="Table search input">
               </div>
               
               <div class="table-container">
@@ -306,7 +306,7 @@
   </div>
   
   <!-- Mobile Sidebar -->
-  <aside id="mobile-sidebar" class="mobile-sidebar">
+<aside id="mobile-sidebar" class="mobile-sidebar" aria-label="Mobile sidebar">
     <div class="mb-lg">
       <div class="flex items-center justify-between mb-lg">
         <div class="flex items-center gap-sm">
@@ -316,11 +316,11 @@
             <p class="text-xs text-muted mb-0">Security Analysis</p>
           </div>
         </div>
-        <button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+<button id="mobile-theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">🌙</button>
       </div>
     </div>
     
-    <nav>
+    <nav aria-label="Mobile navigation">
       <ul class="nav-menu">
         <li class="nav-item">
           <a href="#overview" class="nav-link active">
@@ -378,12 +378,17 @@
   <div id="mobile-overlay" class="mobile-overlay"></div>
   
   <!-- Modal for Finding Details -->
-  <div id="findingModal" class="modal hidden">
-    <div class="modal-overlay" onclick="closeFindingModal()"></div>
+  <dialog id="findingModal" class="modal" aria-labelledby="findingModalTitle">
+    <button class="modal-overlay" 
+            onclick="closeFindingModal()" 
+            onkeydown="handleOverlayKeydown(event)"
+            aria-label="Close modal"
+            tabindex="0">
+    </button>
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="mb-0">Finding Details</h3>
-        <button class="modal-close" onclick="closeFindingModal()">&times;</button>
+        <h3 class="mb-0" id="findingModalTitle">Finding Details</h3>
+<button class="modal-close" onclick="closeFindingModal()" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="findingModalBody">
         <!-- Details will be populated by JavaScript -->
@@ -409,11 +414,13 @@
       justify-content: center;
     }
     
-    /* Ensure hidden modals are completely invisible */
-    .modal.hidden {
+    /* Dialog specific styles */
+    .modal:not([open]) {
       display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
+    }
+    
+    .modal[open] {
+      display: flex !important;
     }
     
     .modal-overlay {
@@ -424,6 +431,19 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       cursor: pointer;
+      border: none;
+      padding: 0;
+      margin: 0;
+      display: block;
+    }
+    
+    .modal-overlay:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    
+    .modal-overlay:hover {
+      background-color: rgba(0, 0, 0, 0.6);
     }
     
     .modal-content {

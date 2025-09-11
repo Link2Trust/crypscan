@@ -1,3 +1,6 @@
 /target
 web/data/findings.json
 src/.DS_Store
+.sonar/report-task.txt
+.sonar/.sonar_lock
+WARP.md

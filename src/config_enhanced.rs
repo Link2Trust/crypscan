@@ -2,7 +2,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 /// Enhanced Cryptoscan CLI arguments with validation
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 #[command(name = "cryptoscan")]
 #[command(about = "Scan code for cryptographic usage and hardcoded secrets", long_about = None)]
 pub struct EnhancedConfig {
@@ -50,27 +50,40 @@ pub struct EnhancedConfig {
 impl EnhancedConfig {
     /// Validate the configuration and return errors if invalid
     pub fn validate(&self) -> Result<(), String> {
-        // Check if the scan path exists
+        self.validate_scan_path()?;
+        self.validate_output_directory()?;
+        self.validate_thread_count()?;
+        self.validate_file_size_limit()?;
+        Ok(())
+    }
+
+    /// Validate that the scan path exists and is readable
+    fn validate_scan_path(&self) -> Result<(), String> {
         if !self.path.exists() {
             return Err(format!("Scan path does not exist: {}", self.path.display()));
         }
 
-        // Check if the scan path is readable
         if let Err(e) = std::fs::metadata(&self.path) {
             return Err(format!("Cannot access scan path: {}", e));
         }
 
-        // Validate output directory
+        Ok(())
+    }
+
+    /// Validate and create output directory if necessary
+    fn validate_output_directory(&self) -> Result<(), String> {
         if let Some(parent) = self.output.parent() {
             if parent != PathBuf::from("") && !parent.exists() {
-                // Try to create the output directory
                 if let Err(e) = std::fs::create_dir_all(parent) {
                     return Err(format!("Cannot create output directory: {}", e));
                 }
             }
         }
+        Ok(())
+    }
 
-        // Validate thread count
+    /// Validate thread count is within acceptable range
+    fn validate_thread_count(&self) -> Result<(), String> {
         if let Some(threads) = self.threads {
             if threads == 0 {
                 return Err("Thread count must be greater than 0".to_string());
@@ -79,15 +92,17 @@ impl EnhancedConfig {
                 return Err("Thread count seems unreasonably high (max: 1000)".to_string());
             }
         }
+        Ok(())
+    }
 
-        // Validate file size limit
+    /// Validate file size limit is within acceptable range
+    fn validate_file_size_limit(&self) -> Result<(), String> {
         if self.max_file_size_mb == 0 {
             return Err("Maximum file size must be greater than 0".to_string());
         }
         if self.max_file_size_mb > 1000 {
             return Err("Maximum file size seems unreasonably high (max: 1000MB)".to_string());
         }
-
         Ok(())
     }
 

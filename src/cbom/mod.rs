@@ -295,7 +295,7 @@ impl CbomGenerator {
     /// Generate CBOM components from scan findings
     fn generate_components(findings: &[Finding]) -> Result<Vec<CbomComponent>, Box<dyn std::error::Error>> {
         let mut components = Vec::new();
-        let mut processed_libraries: HashSet<String> = HashSet::new();
+        let _processed_libraries: HashSet<String> = HashSet::new();
 
         // Group findings by library/component
         let mut library_findings: HashMap<String, Vec<&Finding>> = HashMap::new();
@@ -308,7 +308,7 @@ impl CbomGenerator {
         }
 
         // Generate components for each library
-        for (library_key, lib_findings) in library_findings {
+        for (_library_key, lib_findings) in library_findings {
             if let Some(first_finding) = lib_findings.first() {
                 let component_id = format!("crypto-lib-{}", Uuid::new_v4().to_string()[..8].to_lowercase());
                 

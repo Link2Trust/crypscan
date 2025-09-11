@@ -89,7 +89,7 @@ class ThemeManager {
             const gridColor = isDark ? '#374151' : '#e5e7eb';
             
             Object.values(window.dashboardCharts).forEach(chart => {
-                if (chart && chart.options) {
+                if (chart?.options) {
                     // Update scale colors
                     if (chart.options.scales) {
                         Object.values(chart.options.scales).forEach(scale => {
@@ -99,7 +99,7 @@ class ThemeManager {
                     }
                     
                     // Update legend colors
-                    if (chart.options.plugins && chart.options.plugins.legend) {
+                    if (chart.options.plugins?.legend?.labels) {
                         chart.options.plugins.legend.labels.color = textColor;
                     }
                     
@@ -240,7 +240,7 @@ class ResponsiveTableManager {
     
     removeMobileTableStyles(table) {
         const container = table.closest('.table-container');
-        if (container && container.classList.contains('mobile-scroll')) {
+        if (container?.classList?.contains('mobile-scroll')) {
             container.classList.remove('mobile-scroll');
             container.style.overflowX = '';
             container.style.WebkitOverflowScrolling = '';
