@@ -18,6 +18,7 @@ use crate::scanner::scan_directory;
 #[derive(Deserialize, Debug)]
 struct ScanRequest {
     location: String,
+    #[allow(dead_code)]
     timestamp: String,
 }
 
@@ -35,6 +36,7 @@ struct ScanStatus {
     status: String, // "running", "completed", "failed"
     progress: Option<String>,
     error: Option<String>,
+    #[allow(dead_code)]
     started_at: Instant,
     completed_at: Option<Instant>,
 }
@@ -52,12 +54,10 @@ type ScanTracker = Arc<Mutex<HashMap<String, ScanStatus>>>;
 
 pub async fn start_server(port: u16, web_dir: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     info!("Starting CryptoScanner web server on port {}", port);
+    info!("Web directory: {:?}", web_dir);
     
     // Initialize scan tracker
     let scan_tracker: ScanTracker = Arc::new(Mutex::new(HashMap::new()));
-    
-    // Static files route
-    let static_files = warp::fs::dir(web_dir.clone());
     
     // API Routes
     let api = api_routes(scan_tracker.clone());
@@ -66,9 +66,20 @@ pub async fn start_server(port: u16, web_dir: PathBuf) -> Result<(), Box<dyn std
     let root = warp::path::end()
         .and(warp::fs::file(web_dir.join("index.html")));
     
-    // Combine all routes
-    let routes = root
-        .or(api)
+    // Static files route
+    let static_files = warp::fs::dir(web_dir.clone())
+        .map(|reply| {
+            // Add no-cache headers for findings.json
+            warp::reply::with_header(
+                reply,
+                "cache-control",
+                "no-cache, no-store, must-revalidate"
+            )
+        });
+    
+    // Combine all routes (order matters: most specific first)
+    let routes = api
+        .or(root)
         .or(static_files)
         .with(warp::cors().allow_any_origin());
     

@@ -1038,9 +1038,9 @@ function initiateScan() {
   .then(data => {
     console.log('Scan initiated successfully:', data);
     
-    if (data.scanId) {
+    if (data.scan_id) {
       // Start polling for scan status
-      startScanStatusPolling(data.scanId);
+      startScanStatusPolling(data.scan_id);
     } else {
       throw new Error('No scan ID returned from server');
     }
