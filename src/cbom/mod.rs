@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 use crate::utils::report::Finding;
 
 /// CycloneDX CBOM (Cryptography Bill of Materials) generator
-/// Implements CycloneDX 1.6 specification for cryptographic asset inventory
+/// Implements CycloneDX 1.7 specification for cryptographic asset inventory
 
 /// Main CBOM document structure
 #[derive(Serialize, Deserialize, Debug)]
@@ -16,16 +16,18 @@ pub struct CbomDocument {
     pub bom_format: String,
     /// CycloneDX specification version
     pub spec_version: String,
-    /// CBOM document version
-    pub version: u32,
     /// Document serial number (RFC 4122 URN format)
     pub serial_number: String,
+    /// CBOM document version
+    pub version: u32,
     /// Document metadata
     pub metadata: CbomMetadata,
     /// List of cryptographic components
-    pub components: Vec<CbomComponent>,
-    /// Cryptographic declarations
-    pub declarations: Option<CbomDeclarations>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub components: Option<Vec<CbomComponent>>,
+    /// Dependencies between components
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dependencies: Option<Vec<Dependency>>,
 }
 
 /// CBOM metadata
@@ -35,42 +37,87 @@ pub struct CbomMetadata {
     /// Timestamp when CBOM was generated
     pub timestamp: DateTime<Utc>,
     /// Tools used to generate CBOM
-    pub tools: Vec<CbomTool>,
-    /// Component being described
-    pub component: CbomComponent,
+    pub tools: ToolsMetadata,
 }
 
-/// Tool information
+/// Tools metadata structure
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct CbomTool {
-    /// Tool vendor
-    pub vendor: String,
+pub struct ToolsMetadata {
+    /// Components (not used in this implementation)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub components: Option<Vec<serde_json::Value>>,
+    /// Services that generated the CBOM
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub services: Option<Vec<ToolService>>,
+}
+
+/// Tool service information
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ToolService {
+    /// Provider information
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider: Option<Provider>,
     /// Tool name
     pub name: String,
     /// Tool version
-    pub version: String,
-    /// Tool description
-    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+}
+
+/// Provider information
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Provider {
+    /// Provider name
+    pub name: String,
 }
 
 /// CBOM component representing cryptographic assets
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CbomComponent {
-    /// Component type (library, application, etc.)
+    /// Component type (must be "cryptographic-asset")
     #[serde(rename = "type")]
     pub component_type: String,
-    /// Unique identifier
+    /// Unique identifier (kebab-case)
+    #[serde(rename = "bom-ref")]
     pub bom_ref: String,
-    /// Component name
+    /// Component name (algorithm name)
     pub name: String,
-    /// Component version
-    pub version: Option<String>,
-    /// Component description
-    pub description: Option<String>,
+    /// Evidence of component usage
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub evidence: Option<Evidence>,
     /// Cryptographic properties
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub crypto_properties: Option<CryptoProperties>,
+}
+
+/// Evidence of component usage
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Evidence {
+    /// Occurrences where the component was found
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub occurrences: Option<Vec<Occurrence>>,
+}
+
+/// Occurrence of a cryptographic component
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Occurrence {
+    /// File location
+    pub location: String,
+    /// Line number
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line: Option<usize>,
+    /// Column offset
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub offset: Option<usize>,
+    /// Additional context
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub additional_context: Option<String>,
 }
 
 /// Cryptographic properties of a component
@@ -78,167 +125,47 @@ pub struct CbomComponent {
 #[serde(rename_all = "camelCase")]
 pub struct CryptoProperties {
     /// Type of cryptographic asset
-    pub asset_type: CryptoAssetType,
-    /// Supported algorithms
-    pub algorithm_properties: Option<Vec<AlgorithmProperties>>,
-    /// Certificate properties (if applicable)
-    pub certificate_properties: Option<CertificateProperties>,
-    /// Related cryptographic material
-    pub related_crypto_material_properties: Option<Vec<RelatedCryptoMaterial>>,
-    /// Compliance and certification info
-    pub protocol_properties: Option<ProtocolProperties>,
-}
-
-/// Types of cryptographic assets
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "kebab-case")]
-pub enum CryptoAssetType {
-    Algorithm,
-    Certificate,
-    Protocol,
-    RelatedCryptoMaterial,
-    Key,
-    Token,
+    pub asset_type: String,
+    /// Algorithm properties (single object, not array)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub algorithm_properties: Option<AlgorithmProperties>,
+    /// OID (Object Identifier)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub oid: Option<String>,
 }
 
 /// Algorithm properties
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AlgorithmProperties {
-    /// Primitive type (e.g., "symmetric-encryption", "hash", "digital-signature")
+    /// Primitive type (e.g., "hash", "signature", "encryption")
     pub primitive: String,
-    /// Algorithm family (e.g., "aes", "rsa", "ecdsa")
-    pub algorithm_name: String,
-    /// Key length in bits
-    pub key_length: Option<u32>,
-    /// Cryptographic strength
-    pub cryptographic_strength: Option<u32>,
-    /// Whether algorithm is quantum-safe
-    pub quantum_safe: Option<bool>,
-    /// Classical security level
-    pub classical_security_level: Option<u32>,
-    /// NIST security level
-    pub nist_security_level: Option<u32>,
-    /// Additional parameters
+    /// Parameter set identifier (e.g., key size "256", "2048")
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub parameter_set_identifier: Option<String>,
+    /// Cryptographic functions
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub crypto_functions: Option<Vec<String>>,
 }
 
-/// Certificate properties
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct CertificateProperties {
-    /// Certificate subject name
-    pub subject_name: Option<String>,
-    /// Certificate issuer name
-    pub issuer_name: Option<String>,
-    /// Certificate not valid before
-    pub not_valid_before: Option<DateTime<Utc>>,
-    /// Certificate not valid after  
-    pub not_valid_after: Option<DateTime<Utc>>,
-    /// Certificate signature algorithm
-    pub signature_algorithm_ref: Option<String>,
-    /// Subject public key algorithm
-    pub subject_public_key_algorithm_ref: Option<String>,
-    /// Certificate format (e.g., "X.509")
-    pub certificate_format: Option<String>,
-    /// Certificate extension properties
-    pub certificate_extension: Option<Vec<String>>,
-}
-
-/// Related cryptographic material
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct RelatedCryptoMaterial {
-    /// Type of related material
-    #[serde(rename = "type")]
-    pub material_type: String,
-    /// Reference ID
-    pub id: String,
-    /// State of the material
-    pub state: Option<String>,
-    /// Algorithm reference
-    pub algorithm_ref: Option<String>,
-    /// Creation time
-    pub creation_time: Option<DateTime<Utc>>,
-    /// Activation time
-    pub activation_time: Option<DateTime<Utc>>,
-    /// Update time
-    pub update_time: Option<DateTime<Utc>>,
-    /// Expiration time
-    pub expiration_time: Option<DateTime<Utc>>,
-}
-
-/// Protocol properties
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct ProtocolProperties {
-    /// Protocol type (e.g., "tls", "ipsec")
-    #[serde(rename = "type")]
-    pub protocol_type: String,
-    /// Protocol version
-    pub version: Option<String>,
-    /// Cipher suites
-    pub cipher_suites: Option<Vec<CipherSuite>>,
-    /// Supported ikev2 transform types
-    pub ikev2_transform_types: Option<Vec<String>>,
-    /// Supported cryptographic functions
-    pub cryptographic_functions: Option<Vec<String>>,
-}
-
-/// Cipher suite definition
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct CipherSuite {
-    /// Cipher suite name
-    pub name: String,
-    /// Cipher suite algorithms
-    pub algorithms: Vec<String>,
-    /// Identifiers (e.g., RFC, IANA)
-    pub identifiers: Option<Vec<String>>,
-}
-
-/// Cryptographic declarations
+/// Dependency relationship
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct CbomDeclarations {
-    /// Assessor information
-    pub assessor: Option<String>,
-    /// Assessment date
-    pub assessment_date: Option<DateTime<Utc>>,
-    /// Compliance claims
-    pub compliance: Option<Vec<ComplianceClaim>>,
-    /// Risk assessments
-    pub risk_assessments: Option<Vec<RiskAssessment>>,
+pub struct Dependency {
+    /// Reference to the component
+    #[serde(rename = "ref")]
+    pub component_ref: String,
+    /// List of components this depends on
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub depends_on: Option<Vec<String>>,
 }
 
-/// Compliance claim
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct ComplianceClaim {
-    /// Standard name (e.g., "FIPS-140-2", "Common Criteria")
-    pub standard: String,
-    /// Compliance level
-    pub level: Option<String>,
-    /// Certification status
-    pub status: String,
-    /// Certification date
-    pub date: Option<DateTime<Utc>>,
-    /// Certificate number
-    pub certificate_number: Option<String>,
-}
-
-/// Risk assessment
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct RiskAssessment {
-    /// Risk category
-    pub category: String,
-    /// Risk level (low, medium, high, critical)
-    pub level: String,
-    /// Risk description
-    pub description: String,
-    /// Mitigation recommendations
-    pub mitigation: Option<String>,
+/// Algorithm metadata for mapping common algorithms
+#[derive(Debug, Clone)]
+struct AlgorithmMetadata {
+    primitive: String,
+    oid: Option<String>,
+    crypto_functions: Vec<String>,
 }
 
 /// CBOM Generator implementation
@@ -246,270 +173,279 @@ pub struct CbomGenerator;
 
 impl CbomGenerator {
     /// Generate CBOM from CryptoScanner findings
-    pub fn generate_cbom(findings: &[Finding], target_component: Option<String>) -> Result<CbomDocument, Box<dyn std::error::Error>> {
+    pub fn generate_cbom(
+        findings: &[Finding],
+        _target_component: Option<String>,
+    ) -> Result<CbomDocument, Box<dyn std::error::Error>> {
         let timestamp = Utc::now();
-        // Format serial number per RFC 4122 URN format as required by CycloneDX 1.6
-        let serial_number = format!("urn:uuid:{}", Uuid::new_v4().to_string());
-        
+        let serial_number = format!("urn:uuid:{}", Uuid::new_v4());
+
         // Create tool metadata
-        let tool = CbomTool {
-            vendor: "Link2Trust".to_string(),
-            name: "CryptoScanner".to_string(),
-            version: "0.1.0".to_string(),
-            description: Some("Cryptographic security analysis tool".to_string()),
+        let tools = ToolsMetadata {
+            components: Some(vec![]),
+            services: Some(vec![ToolService {
+                provider: Some(Provider {
+                    name: "Link2Trust".to_string(),
+                }),
+                name: "CryptoScanner".to_string(),
+                version: Some("0.1.0".to_string()),
+            }]),
         };
 
-        // Create target component
-        let target = CbomComponent {
-            component_type: "application".to_string(),
-            bom_ref: "target-component".to_string(),
-            name: target_component.unwrap_or_else(|| "scanned-application".to_string()),
-            version: Some("unknown".to_string()),
-            description: Some("Application analyzed by CryptoScanner".to_string()),
-            crypto_properties: None,
-        };
-
-        let metadata = CbomMetadata {
-            timestamp,
-            tools: vec![tool],
-            component: target.clone(),
-        };
+        let metadata = CbomMetadata { timestamp, tools };
 
         // Generate components from findings
         let components = Self::generate_components(findings)?;
-        
-        // Generate declarations
-        let declarations = Self::generate_declarations(findings)?;
+
+        // Generate dependencies (if any)
+        let dependencies = Self::generate_dependencies(&components);
 
         Ok(CbomDocument {
             bom_format: "CycloneDX".to_string(),
-            spec_version: "1.6".to_string(),
-            version: 1,
+            spec_version: "1.7".to_string(),
             serial_number,
+            version: 1,
             metadata,
-            components,
-            declarations: Some(declarations),
+            components: if components.is_empty() {
+                None
+            } else {
+                Some(components)
+            },
+            dependencies: if dependencies.is_empty() {
+                None
+            } else {
+                Some(dependencies)
+            },
         })
     }
 
     /// Generate CBOM components from scan findings
-    fn generate_components(findings: &[Finding]) -> Result<Vec<CbomComponent>, Box<dyn std::error::Error>> {
+    fn generate_components(
+        findings: &[Finding],
+    ) -> Result<Vec<CbomComponent>, Box<dyn std::error::Error>> {
         let mut components = Vec::new();
-        let _processed_libraries: HashSet<String> = HashSet::new();
+        let mut seen_algorithms: HashMap<String, Vec<&Finding>> = HashMap::new();
 
-        // Group findings by library/component
-        let mut library_findings: HashMap<String, Vec<&Finding>> = HashMap::new();
-        
+        // Group findings by algorithm/library name
         for finding in findings {
-            if finding.category == "library" {
-                let key = format!("{}_{}", finding.keyword, finding.version.as_deref().unwrap_or("unknown"));
-                library_findings.entry(key).or_default().push(finding);
+            if finding.category == "library" || finding.category == "secret" {
+                let key = finding.keyword.clone();
+                seen_algorithms.entry(key).or_default().push(finding);
             }
         }
 
-        // Generate components for each library
-        for (_library_key, lib_findings) in library_findings {
-            if let Some(first_finding) = lib_findings.first() {
-                let component_id = format!("crypto-lib-{}", Uuid::new_v4().to_string()[..8].to_lowercase());
-                
-                let algorithm_props = Self::infer_algorithm_properties(&first_finding.keyword);
-                
-                let crypto_properties = CryptoProperties {
-                    asset_type: CryptoAssetType::Algorithm,
-                    algorithm_properties: Some(algorithm_props),
-                    certificate_properties: None,
-                    related_crypto_material_properties: None,
-                    protocol_properties: None,
-                };
+        // Generate components for each unique algorithm
+        for (algorithm_name, occurrences) in seen_algorithms {
+            let bom_ref = Uuid::new_v4().to_string();
+            let metadata = Self::get_algorithm_metadata(&algorithm_name);
 
-                let component = CbomComponent {
-                    component_type: "library".to_string(),
-                    bom_ref: component_id,
-                    name: first_finding.keyword.clone(),
-                    version: first_finding.version.clone(),
-                    description: Some(format!("Cryptographic library detected in {}", first_finding.file)),
-                    crypto_properties: Some(crypto_properties),
-                };
+            // Collect occurrences
+            let evidence_occurrences: Vec<Occurrence> = occurrences
+                .iter()
+                .map(|f| Occurrence {
+                    location: f.file.clone(),
+                    line: Some(f.line_number),
+                    offset: None,
+                    additional_context: Some(f.line_content.clone()),
+                })
+                .collect();
 
-                components.push(component);
-            }
-        }
+            let component = CbomComponent {
+                component_type: "cryptographic-asset".to_string(),
+                bom_ref,
+                name: algorithm_name.clone(),
+                evidence: Some(Evidence {
+                    occurrences: Some(evidence_occurrences),
+                }),
+                crypto_properties: Some(CryptoProperties {
+                    asset_type: "algorithm".to_string(),
+                    algorithm_properties: Some(AlgorithmProperties {
+                        primitive: metadata.primitive,
+                        parameter_set_identifier: Self::infer_parameter_set(&algorithm_name),
+                        crypto_functions: Some(metadata.crypto_functions),
+                    }),
+                    oid: metadata.oid,
+                }),
+            };
 
-        // Generate components for keystore files
-        for finding in findings {
-            if finding.category == "keystore" {
-                let component_id = format!("keystore-{}", Uuid::new_v4().to_string()[..8].to_lowercase());
-                
-                let crypto_properties = match finding.file.split('.').last() {
-                    Some("pem") | Some("crt") | Some("cer") => {
-                        Some(CryptoProperties {
-                            asset_type: CryptoAssetType::Certificate,
-                            algorithm_properties: None,
-                            certificate_properties: Some(CertificateProperties {
-                                subject_name: None,
-                                issuer_name: None,
-                                not_valid_before: None,
-                                not_valid_after: None,
-                                signature_algorithm_ref: None,
-                                subject_public_key_algorithm_ref: None,
-                                certificate_format: Some("X.509".to_string()),
-                                certificate_extension: None,
-                            }),
-                            related_crypto_material_properties: None,
-                            protocol_properties: None,
-                        })
-                    },
-                    Some("key") | Some("p12") | Some("jks") | Some("pfx") => {
-                        Some(CryptoProperties {
-                            asset_type: CryptoAssetType::Key,
-                            algorithm_properties: None,
-                            certificate_properties: None,
-                            related_crypto_material_properties: Some(vec![RelatedCryptoMaterial {
-                                material_type: "private-key".to_string(),
-                                id: component_id.clone(),
-                                state: Some("unknown".to_string()),
-                                algorithm_ref: None,
-                                creation_time: None,
-                                activation_time: None,
-                                update_time: None,
-                                expiration_time: None,
-                            }]),
-                            protocol_properties: None,
-                        })
-                    },
-                    _ => None,
-                };
-
-                let component = CbomComponent {
-                    component_type: "file".to_string(),
-                    bom_ref: component_id,
-                    name: finding.file.split('/').last().unwrap_or(&finding.file).to_string(),
-                    version: None,
-                    description: Some(format!("Cryptographic keystore file: {}", finding.file)),
-                    crypto_properties,
-                };
-
-                components.push(component);
-            }
+            components.push(component);
         }
 
         Ok(components)
     }
 
-    /// Generate cryptographic declarations
-    fn generate_declarations(findings: &[Finding]) -> Result<CbomDeclarations, Box<dyn std::error::Error>> {
-        let mut risk_assessments = Vec::new();
-        
-        // Assess hardcoded secrets risk
-        let secret_count = findings.iter().filter(|f| f.category == "secret").count();
-        if secret_count > 0 {
-            let risk_level = match secret_count {
-                1..=2 => "medium",
-                3..=5 => "high", 
-                _ => "critical",
+    /// Get algorithm metadata based on algorithm name
+    fn get_algorithm_metadata(algorithm_name: &str) -> AlgorithmMetadata {
+        let name_lower = algorithm_name.to_lowercase();
+
+        // SHA algorithms
+        if name_lower.contains("sha256") || name_lower == "sha-256" {
+            return AlgorithmMetadata {
+                primitive: "hash".to_string(),
+                oid: Some("2.16.840.1.101.3.4.2.1".to_string()),
+                crypto_functions: vec!["digest".to_string()],
             };
-            
-            risk_assessments.push(RiskAssessment {
-                category: "hardcoded-secrets".to_string(),
-                level: risk_level.to_string(),
-                description: format!("Found {} hardcoded secrets in codebase", secret_count),
-                mitigation: Some("Rotate exposed secrets and implement secure secret management".to_string()),
-            });
+        }
+        if name_lower.contains("sha384") || name_lower == "sha-384" {
+            return AlgorithmMetadata {
+                primitive: "hash".to_string(),
+                oid: Some("2.16.840.1.101.3.4.2.2".to_string()),
+                crypto_functions: vec!["digest".to_string()],
+            };
+        }
+        if name_lower.contains("sha512") || name_lower == "sha-512" {
+            return AlgorithmMetadata {
+                primitive: "hash".to_string(),
+                oid: Some("2.16.840.1.101.3.4.2.3".to_string()),
+                crypto_functions: vec!["digest".to_string()],
+            };
+        }
+        if name_lower.contains("sha1") || name_lower == "sha-1" {
+            return AlgorithmMetadata {
+                primitive: "hash".to_string(),
+                oid: Some("1.3.14.3.2.26".to_string()),
+                crypto_functions: vec!["digest".to_string()],
+            };
         }
 
-        // Assess cryptographic library diversity
-        let unique_libraries = findings.iter()
-            .filter(|f| f.category == "library")
-            .map(|f| &f.keyword)
-            .collect::<HashSet<_>>()
-            .len();
-            
-        if unique_libraries > 5 {
-            risk_assessments.push(RiskAssessment {
-                category: "library-complexity".to_string(),
-                level: "medium".to_string(),
-                description: format!("High cryptographic library diversity ({} unique libraries)", unique_libraries),
-                mitigation: Some("Consider consolidating cryptographic implementations".to_string()),
-            });
+        // RSA signature algorithms
+        if name_lower.contains("sha256withrsa") {
+            return AlgorithmMetadata {
+                primitive: "signature".to_string(),
+                oid: Some("1.2.840.113549.1.1.11".to_string()),
+                crypto_functions: vec!["sign".to_string(), "verify".to_string()],
+            };
+        }
+        if name_lower.contains("sha384withrsa") {
+            return AlgorithmMetadata {
+                primitive: "signature".to_string(),
+                oid: Some("1.2.840.113549.1.1.12".to_string()),
+                crypto_functions: vec!["sign".to_string(), "verify".to_string()],
+            };
+        }
+        if name_lower.contains("sha512withrsa") {
+            return AlgorithmMetadata {
+                primitive: "signature".to_string(),
+                oid: Some("1.2.840.113549.1.1.13".to_string()),
+                crypto_functions: vec!["sign".to_string(), "verify".to_string()],
+            };
         }
 
-        Ok(CbomDeclarations {
-            assessor: Some("CryptoScanner v0.1.0".to_string()),
-            assessment_date: Some(Utc::now()),
-            compliance: None,
-            risk_assessments: if risk_assessments.is_empty() { None } else { Some(risk_assessments) },
-        })
+        // RSA encryption
+        if name_lower.contains("rsa") && !name_lower.contains("with") {
+            return AlgorithmMetadata {
+                primitive: "asymmetric".to_string(),
+                oid: Some("1.2.840.113549.1.1.1".to_string()),
+                crypto_functions: vec!["encrypt".to_string(), "decrypt".to_string()],
+            };
+        }
+
+        // AES
+        if name_lower.contains("aes") {
+            return AlgorithmMetadata {
+                primitive: "block-cipher".to_string(),
+                oid: None, // AES has multiple OIDs based on key size
+                crypto_functions: vec!["encrypt".to_string(), "decrypt".to_string()],
+            };
+        }
+
+        // ECDSA
+        if name_lower.contains("ecdsa") || name_lower.contains("ec-dsa") {
+            return AlgorithmMetadata {
+                primitive: "signature".to_string(),
+                oid: Some("1.2.840.10045.4.3".to_string()),
+                crypto_functions: vec!["sign".to_string(), "verify".to_string()],
+            };
+        }
+
+        // HMAC
+        if name_lower.contains("hmac") {
+            return AlgorithmMetadata {
+                primitive: "mac".to_string(),
+                oid: None,
+                crypto_functions: vec!["tag".to_string()],
+            };
+        }
+
+        // Default/unknown
+        AlgorithmMetadata {
+            primitive: "unknown".to_string(),
+            oid: None,
+            crypto_functions: vec![],
+        }
     }
 
-    /// Infer algorithm properties from library name
-    fn infer_algorithm_properties(library_name: &str) -> Vec<AlgorithmProperties> {
-        let library_lower = library_name.to_lowercase();
-        let mut algorithms = Vec::new();
+    /// Infer parameter set identifier from algorithm name
+    fn infer_parameter_set(algorithm_name: &str) -> Option<String> {
+        let name_lower = algorithm_name.to_lowercase();
 
-        // Common cryptographic libraries and their algorithms
-        match library_lower.as_str() {
-            name if name.contains("openssl") => {
-                algorithms.push(AlgorithmProperties {
-                    primitive: "symmetric-encryption".to_string(),
-                    algorithm_name: "AES".to_string(),
-                    key_length: Some(256),
-                    cryptographic_strength: Some(256),
-                    quantum_safe: Some(false),
-                    classical_security_level: Some(256),
-                    nist_security_level: Some(5),
-                    parameter_set_identifier: None,
-                });
-                algorithms.push(AlgorithmProperties {
-                    primitive: "digital-signature".to_string(),
-                    algorithm_name: "RSA".to_string(),
-                    key_length: Some(2048),
-                    cryptographic_strength: Some(112),
-                    quantum_safe: Some(false),
-                    classical_security_level: Some(112),
-                    nist_security_level: Some(3),
-                    parameter_set_identifier: None,
-                });
-            },
-            name if name.contains("bouncycastle") => {
-                algorithms.push(AlgorithmProperties {
-                    primitive: "symmetric-encryption".to_string(),
-                    algorithm_name: "AES".to_string(),
-                    key_length: Some(256),
-                    cryptographic_strength: Some(256),
-                    quantum_safe: Some(false),
-                    classical_security_level: Some(256),
-                    nist_security_level: Some(5),
-                    parameter_set_identifier: None,
-                });
-            },
-            name if name.contains("crypto") => {
-                algorithms.push(AlgorithmProperties {
-                    primitive: "hash".to_string(),
-                    algorithm_name: "SHA-256".to_string(),
-                    key_length: None,
-                    cryptographic_strength: Some(256),
-                    quantum_safe: Some(false),
-                    classical_security_level: Some(256),
-                    nist_security_level: Some(5),
-                    parameter_set_identifier: None,
-                });
-            },
-            _ => {
-                // Generic fallback
-                algorithms.push(AlgorithmProperties {
-                    primitive: "unknown".to_string(),
-                    algorithm_name: library_name.to_string(),
-                    key_length: None,
-                    cryptographic_strength: None,
-                    quantum_safe: Some(false),
-                    classical_security_level: None,
-                    nist_security_level: None,
-                    parameter_set_identifier: None,
+        // Extract key sizes
+        if name_lower.contains("256") {
+            return Some("256".to_string());
+        }
+        if name_lower.contains("384") {
+            return Some("384".to_string());
+        }
+        if name_lower.contains("512") {
+            return Some("512".to_string());
+        }
+        if name_lower.contains("2048") {
+            return Some("2048".to_string());
+        }
+        if name_lower.contains("3072") {
+            return Some("3072".to_string());
+        }
+        if name_lower.contains("4096") {
+            return Some("4096".to_string());
+        }
+
+        None
+    }
+
+    /// Generate dependencies between components
+    fn generate_dependencies(components: &[CbomComponent]) -> Vec<Dependency> {
+        let mut dependencies = Vec::new();
+
+        // Example: If SHA256withRSA is present, it depends on SHA256
+        let component_names: HashMap<String, String> = components
+            .iter()
+            .map(|c| (c.name.clone(), c.bom_ref.clone()))
+            .collect();
+
+        for component in components {
+            let name_lower = component.name.to_lowercase();
+
+            // Check if this is a composite algorithm
+            let mut depends_on = Vec::new();
+
+            if name_lower.contains("withrsa") || name_lower.contains("with-rsa") {
+                // Find SHA component
+                if name_lower.contains("sha256") {
+                    if let Some(sha_ref) = component_names.get("SHA256") {
+                        depends_on.push(sha_ref.clone());
+                    }
+                }
+                if name_lower.contains("sha384") {
+                    if let Some(sha_ref) = component_names.get("SHA384") {
+                        depends_on.push(sha_ref.clone());
+                    }
+                }
+                if name_lower.contains("sha512") {
+                    if let Some(sha_ref) = component_names.get("SHA512") {
+                        depends_on.push(sha_ref.clone());
+                    }
+                }
+            }
+
+            if !depends_on.is_empty() {
+                dependencies.push(Dependency {
+                    component_ref: component.bom_ref.clone(),
+                    depends_on: Some(depends_on),
                 });
             }
         }
 
-        algorithms
+        dependencies
     }
 
     /// Export CBOM to JSON format
@@ -518,54 +454,63 @@ impl CbomGenerator {
     }
 
     /// Export CBOM to XML format (basic implementation)
-    pub fn export_xml(cbom: &CbomDocument) -> Result<String, Box<dyn std::error::Error>> {
-        // Basic XML serialization - in production you'd use a proper XML library
-        let json = Self::export_json(cbom)?;
-        Ok(format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cbom>\n<!-- JSON representation: -->\n<!-- {} -->\n</cbom>", json))
+    pub fn export_xml(_cbom: &CbomDocument) -> Result<String, Box<dyn std::error::Error>> {
+        // XML export would require additional dependencies like quick-xml
+        // For now, return a placeholder
+        Err("XML export not yet implemented for CycloneDX 1.7 format".into())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::report::Finding;
 
     #[test]
     fn test_cbom_generation() {
         let findings = vec![
             Finding {
-                file: "/test/crypto.rs".to_string(),
-                line_number: 1,
-                line_content: "use openssl::crypto;".to_string(),
-                match_type: "import".to_string(),
-                keyword: "openssl".to_string(),
-                context: "import".to_string(),
-                version: Some("1.0.0".to_string()),
-                language: "Rust".to_string(),
-                source: "import".to_string(),
+                file: "/test/crypto.java".to_string(),
+                line_number: 187,
+                line_content: "Signature.getInstance(\"SHA256withRSA\")".to_string(),
+                match_type: "algorithm".to_string(),
+                keyword: "SHA256withRSA".to_string(),
+                context: "signature".to_string(),
+                version: None,
+                language: "Java".to_string(),
+                source: "code".to_string(),
                 category: "library".to_string(),
             },
             Finding {
-                file: "/test/cert.pem".to_string(),
-                line_number: 1,
-                line_content: "-----BEGIN CERTIFICATE-----".to_string(),
-                match_type: "file".to_string(),
-                keyword: "certificate".to_string(),
-                context: "file".to_string(),
+                file: "/test/crypto.java".to_string(),
+                line_number: 190,
+                line_content: "MessageDigest.getInstance(\"SHA256\")".to_string(),
+                match_type: "algorithm".to_string(),
+                keyword: "SHA256".to_string(),
+                context: "hash".to_string(),
                 version: None,
-                language: "PEM".to_string(),
-                source: "file".to_string(),
-                category: "keystore".to_string(),
+                language: "Java".to_string(),
+                source: "code".to_string(),
+                category: "library".to_string(),
             },
         ];
 
         let cbom = CbomGenerator::generate_cbom(&findings, Some("test-app".to_string())).unwrap();
-        
-        assert_eq!(cbom.spec_version, "1.6");
+
+        assert_eq!(cbom.spec_version, "1.7");
         assert_eq!(cbom.version, 1);
-        assert_eq!(cbom.metadata.component.name, "test-app");
-        assert!(cbom.components.len() >= 2);
-        assert!(cbom.declarations.is_some());
+        assert_eq!(cbom.bom_format, "CycloneDX");
+        assert!(cbom.serial_number.starts_with("urn:uuid:"));
+        assert!(cbom.components.is_some());
+
+        let components = cbom.components.unwrap();
+        assert!(!components.is_empty());
+
+        // Verify component structure
+        for component in &components {
+            assert_eq!(component.component_type, "cryptographic-asset");
+            assert!(component.crypto_properties.is_some());
+            assert!(component.evidence.is_some());
+        }
     }
 
     #[test]
@@ -573,8 +518,24 @@ mod tests {
         let findings = vec![];
         let cbom = CbomGenerator::generate_cbom(&findings, None).unwrap();
         let json = CbomGenerator::export_json(&cbom).unwrap();
-        
+
         assert!(json.contains("specVersion"));
-        assert!(json.contains("1.6"));
+        assert!(json.contains("1.7"));
+        assert!(json.contains("CycloneDX"));
+    }
+
+    #[test]
+    fn test_algorithm_metadata() {
+        let sha256_meta = CbomGenerator::get_algorithm_metadata("SHA256");
+        assert_eq!(sha256_meta.primitive, "hash");
+        assert_eq!(
+            sha256_meta.oid,
+            Some("2.16.840.1.101.3.4.2.1".to_string())
+        );
+        assert!(sha256_meta.crypto_functions.contains(&"digest".to_string()));
+
+        let rsa_sig_meta = CbomGenerator::get_algorithm_metadata("SHA256withRSA");
+        assert_eq!(rsa_sig_meta.primitive, "signature");
+        assert!(rsa_sig_meta.crypto_functions.contains(&"verify".to_string()));
     }
 }

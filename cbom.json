@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
   "version": 1,
-  "serialNumber": "urn:uuid:1cf32856-5e76-4bd5-acf7-3cbfa9d78fd6",
+  "serialNumber": "urn:uuid:0703e014-0c56-42b9-afe5-f4221ad6bcbf",
   "metadata": {
-    "timestamp": "2025-08-22T13:27:24.719243Z",
+    "timestamp": "2025-11-04T07:36:51.626722Z",
     "tools": [
       {
         "vendor": "Link2Trust",
@@ -16,7 +16,7 @@
     "component": {
       "type": "application",
       "bomRef": "target-component",
-      "name": "qPKI",
+      "name": "MLDSACert",
       "version": "unknown",
       "description": "Application analyzed by CryptoScanner",
       "cryptoProperties": null
@@ -25,10 +25,35 @@
   "components": [
     {
       "type": "library",
-      "bomRef": "crypto-lib-eb000832",
+      "bomRef": "crypto-lib-62101d43",
+      "name": "cryptography",
+      "version": null,
+      "description": "Cryptographic library detected in /Users/GitHub/Link2Trust/mldsa-cert/mldsa_cert.py",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": [
+          {
+            "primitive": "hash",
+            "algorithmName": "SHA-256",
+            "keyLength": null,
+            "cryptographicStrength": 256,
+            "quantumSafe": false,
+            "classicalSecurityLevel": 256,
+            "nistSecurityLevel": 5,
+            "parameterSetIdentifier": null
+          }
+        ],
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "library",
+      "bomRef": "crypto-lib-4c08316c",
       "name": "openssl",
       "version": "0.10",
-      "description": "Cryptographic library detected in ../qPKI/deploy-production.sh",
+      "description": "Cryptographic library detected in /Users/GitHub/Link2Trust/mldsa-cert/mldsa_cert.py",
       "cryptoProperties": {
         "assetType": "algorithm",
         "algorithmProperties": [
@@ -59,101 +84,170 @@
       }
     },
     {
-      "type": "library",
-      "bomRef": "crypto-lib-7669b0f6",
-      "name": "cryptography",
+      "type": "file",
+      "bomRef": "keystore-beb7a6b2",
+      "name": "demo-ca.key",
       "version": null,
-      "description": "Cryptographic library detected in ../qPKI/app.py",
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo-ca.key",
       "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
+        "assetType": "key",
+        "algorithmProperties": null,
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": [
           {
-            "primitive": "hash",
-            "algorithmName": "SHA-256",
-            "keyLength": null,
-            "cryptographicStrength": 256,
-            "quantumSafe": false,
-            "classicalSecurityLevel": 256,
-            "nistSecurityLevel": 5,
-            "parameterSetIdentifier": null
+            "type": "private-key",
+            "id": "keystore-beb7a6b2",
+            "state": "unknown",
+            "algorithmRef": null,
+            "creationTime": null,
+            "activationTime": null,
+            "updateTime": null,
+            "expirationTime": null
           }
         ],
-        "certificateProperties": null,
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "file",
+      "bomRef": "keystore-4eed8081",
+      "name": "test.crt",
+      "version": null,
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/test.crt",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "algorithmProperties": null,
+        "certificateProperties": {
+          "subjectName": null,
+          "issuerName": null,
+          "notValidBefore": null,
+          "notValidAfter": null,
+          "signatureAlgorithmRef": null,
+          "subjectPublicKeyAlgorithmRef": null,
+          "certificateFormat": "X.509",
+          "certificateExtension": null
+        },
         "relatedCryptoMaterialProperties": null,
         "protocolProperties": null
       }
     },
     {
-      "type": "library",
-      "bomRef": "crypto-lib-43f49880",
-      "name": "hashlib",
+      "type": "file",
+      "bomRef": "keystore-ed9835ee",
+      "name": "demo.key",
       "version": null,
-      "description": "Cryptographic library detected in ../qPKI/app.py",
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo.key",
       "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
+        "assetType": "key",
+        "algorithmProperties": null,
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": [
           {
-            "primitive": "unknown",
-            "algorithmName": "hashlib",
-            "keyLength": null,
-            "cryptographicStrength": null,
-            "quantumSafe": false,
-            "classicalSecurityLevel": null,
-            "nistSecurityLevel": null,
-            "parameterSetIdentifier": null
+            "type": "private-key",
+            "id": "keystore-ed9835ee",
+            "state": "unknown",
+            "algorithmRef": null,
+            "creationTime": null,
+            "activationTime": null,
+            "updateTime": null,
+            "expirationTime": null
           }
         ],
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "file",
+      "bomRef": "keystore-3f072dfd",
+      "name": "test.key",
+      "version": null,
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/test.key",
+      "cryptoProperties": {
+        "assetType": "key",
+        "algorithmProperties": null,
         "certificateProperties": null,
+        "relatedCryptoMaterialProperties": [
+          {
+            "type": "private-key",
+            "id": "keystore-3f072dfd",
+            "state": "unknown",
+            "algorithmRef": null,
+            "creationTime": null,
+            "activationTime": null,
+            "updateTime": null,
+            "expirationTime": null
+          }
+        ],
+        "protocolProperties": null
+      }
+    },
+    {
+      "type": "file",
+      "bomRef": "keystore-cbb23cab",
+      "name": "demo-ca.crt",
+      "version": null,
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo-ca.crt",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "algorithmProperties": null,
+        "certificateProperties": {
+          "subjectName": null,
+          "issuerName": null,
+          "notValidBefore": null,
+          "notValidAfter": null,
+          "signatureAlgorithmRef": null,
+          "subjectPublicKeyAlgorithmRef": null,
+          "certificateFormat": "X.509",
+          "certificateExtension": null
+        },
         "relatedCryptoMaterialProperties": null,
         "protocolProperties": null
       }
     },
     {
-      "type": "library",
-      "bomRef": "crypto-lib-470e1602",
-      "name": "jwt",
+      "type": "file",
+      "bomRef": "keystore-956ea721",
+      "name": "webserver.key",
       "version": null,
-      "description": "Cryptographic library detected in ../qPKI/src/qpki/api/app.py",
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/webserver.key",
       "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
+        "assetType": "key",
+        "algorithmProperties": null,
+        "certificateProperties": null,
+        "relatedCryptoMaterialProperties": [
           {
-            "primitive": "unknown",
-            "algorithmName": "jwt",
-            "keyLength": null,
-            "cryptographicStrength": null,
-            "quantumSafe": false,
-            "classicalSecurityLevel": null,
-            "nistSecurityLevel": null,
-            "parameterSetIdentifier": null
+            "type": "private-key",
+            "id": "keystore-956ea721",
+            "state": "unknown",
+            "algorithmRef": null,
+            "creationTime": null,
+            "activationTime": null,
+            "updateTime": null,
+            "expirationTime": null
           }
         ],
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": null,
         "protocolProperties": null
       }
     },
     {
-      "type": "library",
-      "bomRef": "crypto-lib-2ddb24c6",
-      "name": "ssl",
+      "type": "file",
+      "bomRef": "keystore-78c1bdb6",
+      "name": "demo.crt",
       "version": null,
-      "description": "Cryptographic library detected in ../qPKI/deploy-production.sh",
+      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo.crt",
       "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
-          {
-            "primitive": "unknown",
-            "algorithmName": "ssl",
-            "keyLength": null,
-            "cryptographicStrength": null,
-            "quantumSafe": false,
-            "classicalSecurityLevel": null,
-            "nistSecurityLevel": null,
-            "parameterSetIdentifier": null
-          }
-        ],
-        "certificateProperties": null,
+        "assetType": "certificate",
+        "algorithmProperties": null,
+        "certificateProperties": {
+          "subjectName": null,
+          "issuerName": null,
+          "notValidBefore": null,
+          "notValidAfter": null,
+          "signatureAlgorithmRef": null,
+          "subjectPublicKeyAlgorithmRef": null,
+          "certificateFormat": "X.509",
+          "certificateExtension": null
+        },
         "relatedCryptoMaterialProperties": null,
         "protocolProperties": null
       }
@@ -161,15 +255,8 @@
   ],
   "declarations": {
     "assessor": "CryptoScanner v0.1.0",
-    "assessmentDate": "2025-08-22T13:27:24.719503Z",
+    "assessmentDate": "2025-11-04T07:36:51.626756Z",
     "compliance": null,
-    "riskAssessments": [
-      {
-        "category": "hardcoded-secrets",
-        "level": "high",
-        "description": "Found 3 hardcoded secrets in codebase",
-        "mitigation": "Rotate exposed secrets and implement secure secret management"
-      }
-    ]
+    "riskAssessments": null
   }
 }

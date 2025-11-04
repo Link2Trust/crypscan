@@ -4,7 +4,6 @@ use cryptoscan::cbom::{CbomGenerator, CbomDocument};
 use clap::Parser;
 use log::{info, error};
 use std::process;
-use std::path::PathBuf;
 use std::fs;
 
 #[cfg(feature = "server")]
@@ -164,26 +163,27 @@ fn print_cbom_summary(cbom: &CbomDocument) {
     println!("\n📋 CBOM Generation Summary");
     println!("├─ Spec Version: {}", cbom.spec_version);
     println!("├─ Document Version: {}", cbom.version);
-    println!("├─ Target Component: {}", cbom.metadata.component.name);
-    println!("├─ Components Found: {}", cbom.components.len());
     
-    // Component breakdown
-    let mut component_types = std::collections::HashMap::new();
-    for component in &cbom.components {
-        *component_types.entry(&component.component_type).or_insert(0) += 1;
+    if let Some(components) = &cbom.components {
+        println!("├─ Components Found: {}", components.len());
+        
+        // Component breakdown by type
+        let mut component_types = std::collections::HashMap::new();
+        for component in components {
+            *component_types.entry(&component.component_type).or_insert(0) += 1;
+        }
+        
+        for (comp_type, count) in component_types {
+            println!("│  ├─ {}: {}", comp_type, count);
+        }
+    } else {
+        println!("├─ Components Found: 0");
     }
     
-    for (comp_type, count) in component_types {
-        println!("│  ├─ {}: {}", comp_type, count);
-    }
-    
-    // Risk assessments
-    if let Some(declarations) = &cbom.declarations {
-        if let Some(risks) = &declarations.risk_assessments {
-            println!("├─ Risk Assessments: {}", risks.len());
-            for risk in risks {
-                println!("│  ├─ {}: {} ({})", risk.category, risk.level, risk.description);
-            }
+    // Dependencies
+    if let Some(dependencies) = &cbom.dependencies {
+        if !dependencies.is_empty() {
+            println!("├─ Dependencies: {}", dependencies.len());
         }
     }
     
