@@ -1,0 +1,6 @@
+projectKey=CryptoScan
+serverUrl=http://localhost:9000
+serverVersion=25.9.0.112764
+dashboardUrl=http://localhost:9000/dashboard?id=CryptoScan
+ceTaskId=f4dac3c7-41b5-4110-a773-dc7fa76126db
+ceTaskUrl=http://localhost:9000/api/ce/task?id=f4dac3c7-41b5-4110-a773-dc7fa76126db

@@ -1,0 +1,573 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:a78eb43b-eb5c-4ba6-8fa1-ef0e9b5d4e79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-11-04T07:51:31.300571Z",
+    "tools": {
+      "components": [],
+      "services": [
+        {
+          "provider": {
+            "name": "Link2Trust"
+          },
+          "name": "CryptoScanner",
+          "version": "0.1.0"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "9a5cbe2d-307f-4623-b3b5-54f71439a4eb",
+      "name": "java.security",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 28,
+            "additionalContext": "    map.insert(\"java.security\", (\"java.security\", \"import\", \"Java\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "5b2c4938-5773-40c5-ac45-0ecf7ca152d3",
+      "name": "MongoDB URI",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/secrets.rs",
+            "line": 39,
+            "additionalContext": "            (r\"(?i)mongodb://[^:]+:[^@]+@[^/]+\", \"MongoDB URI\", \"MongoDB connection string with credentials\", 3),"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "220fde40-d271-4d6d-9d2c-8c355aa1eb2c",
+      "name": "MySQL URI",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/secrets.rs",
+            "line": 40,
+            "additionalContext": "            (r\"(?i)mysql://[^:]+:[^@]+@[^/]+\", \"MySQL URI\", \"MySQL connection string with credentials\", 3),"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "0000cd1e-ae43-454d-aed7-1b56fc04b5ab",
+      "name": "rustls",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 14,
+            "additionalContext": "    map.insert(\"rustls\", (\"rustls\", \"use\", \"Rust\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "2fd0101f-dc00-4fa2-b7b1-3ba84ac644e8",
+      "name": "pycryptodome",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 20,
+            "additionalContext": "    map.insert(\"pycryptodome\", (\"pycryptodome\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "e3bb4feb-3737-4ea5-be0a-6639799a64e7",
+      "name": "cryptography",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 18,
+            "additionalContext": "    map.insert(\"cryptography\", (\"cryptography\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "f1ecac5b-ae12-41f1-82f9-6f9eaf716843",
+      "name": "secrecy",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 15,
+            "additionalContext": "    map.insert(\"secrecy\", (\"secrecy\", \"use\", \"Rust\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "f98ef74b-5652-4c7d-a067-fcf92d57ea5f",
+      "name": "pycrypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 19,
+            "additionalContext": "    map.insert(\"pycrypto\", (\"pycrypto\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "9e5ab948-a67b-4f8a-a4b9-f5b036686b60",
+      "name": "ssl",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 21,
+            "additionalContext": "    map.insert(\"ssl\", (\"ssl\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "949f7a58-9a96-46a1-b916-a43d6e917d78",
+      "name": "jwt",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 23,
+            "additionalContext": "    map.insert(\"jwt\", (\"jwt\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "f6351657-85cf-48b9-9315-d5ec8bc5da31",
+      "name": "sun.security",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 29,
+            "additionalContext": "    map.insert(\"sun.security\", (\"sun.security\", \"import\", \"Java\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "4fb2e544-95c4-42e2-931e-ac9696c75cb3",
+      "name": "golang.crypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 42,
+            "additionalContext": "    map.insert(\"golang.org/x/crypto\", (\"golang.crypto\", \"import\", \"Go\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "4340ec8a-5ec9-4bea-bc5c-8bbbd4b5fdeb",
+      "name": "bouncycastle",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 27,
+            "additionalContext": "    map.insert(\"bouncycastle\", (\"bouncycastle\", \"import\", \"Java\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "c5306eb4-576e-4b59-9eeb-b178cf6570ed",
+      "name": "hashlib",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 22,
+            "additionalContext": "    map.insert(\"hashlib\", (\"hashlib\", \"import\", \"Python\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "96eb08db-e88b-41eb-a9cb-e1232e389339",
+      "name": "javax.crypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 26,
+            "additionalContext": "    map.insert(\"javax.crypto\", (\"javax.crypto\", \"import\", \"Java\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "a38eac88-9e64-4c8e-8375-916323890256",
+      "name": "bcrypt",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 36,
+            "additionalContext": "    map.insert(\"require('bcrypt')\", (\"bcrypt\", \"require\", \"JavaScript\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "f93fe6f2-b727-4b1b-ae08-26502b7c786d",
+      "name": "libsodium",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 46,
+            "additionalContext": "    map.insert(\"#include <sodium.h>\", (\"libsodium\", \"include\", \"C/C++\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "cb361f4c-9960-4538-8ef3-61c5aa7af78d",
+      "name": "mbedtls",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 47,
+            "additionalContext": "    map.insert(\"#include <mbedtls\", (\"mbedtls\", \"include\", \"C/C++\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "f118ab0c-0f30-4590-8151-9f9f5abc7fc8",
+      "name": "ring",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 13,
+            "additionalContext": "    map.insert(\"ring\", (\"ring\", \"use\", \"Rust\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "33248e7b-423b-4d9a-9dea-44f198c842f2",
+      "name": "wolfssl",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 48,
+            "additionalContext": "    map.insert(\"#include <wolfssl\", (\"wolfssl\", \"include\", \"C/C++\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "d8073126-978b-405f-856c-ae870cfa7b57",
+      "name": "jsonwebtoken",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 34,
+            "additionalContext": "    map.insert(\"require('jsonwebtoken')\", (\"jsonwebtoken\", \"require\", \"JavaScript\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "18f25da0-4039-4c36-a5b3-72dd7f9e9676",
+      "name": "PostgreSQL URI",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/secrets.rs",
+            "line": 41,
+            "additionalContext": "            (r\"(?i)postgresql://[^:]+:[^@]+@[^/]+\", \"PostgreSQL URI\", \"PostgreSQL connection string with credentials\", 3),"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "4f6671be-159d-4fe2-af4d-6d012d3bc9cc",
+      "name": "crypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 32,
+            "additionalContext": "    map.insert(\"require('crypto')\", (\"crypto\", \"require\", \"JavaScript\", None));"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 41,
+            "additionalContext": "    map.insert(\"crypto/\", (\"crypto\", \"import\", \"Go\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "b76af11b-edf2-443e-93b1-f7fc155f066e",
+      "name": "node-forge",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 38,
+            "additionalContext": "    map.insert(\"require('node-forge')\", (\"node-forge\", \"require\", \"JavaScript\", None));"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "b8b317da-be80-4312-bba4-c9150899f66f",
+      "name": "openssl",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 12,
+            "additionalContext": "    map.insert(\"openssl\", (\"openssl\", \"use\", \"Rust\", Some(\"0.10\")));"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 45,
+            "additionalContext": "    map.insert(\"#include <openssl\", (\"openssl\", \"include\", \"C/C++\", None));"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/code.rs",
+            "line": 45,
+            "additionalContext": "    map.insert(\"#include <openssl\", (\"openssl\", \"include\", \"C/C++\", None));"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/artefacts.rs",
+            "line": 19,
+            "additionalContext": "    (\"openssl genpkey\", \"OpenSSL\", \"Shell\"),"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/crypscan/src/scanner/artefacts.rs",
+            "line": 20,
+            "additionalContext": "    (\"openssl rsa\", \"OpenSSL\", \"Shell\"),"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    }
+  ]
+}
