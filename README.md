@@ -3,13 +3,13 @@
 ![Rust](https://img.shields.io/badge/Rust-2021-orange)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
-![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-22%20passing-brightgreen)
 ![Performance](https://img.shields.io/badge/performance-optimized-blue)
 
 A **high-performance Rust tool** to discover cryptographic usage across your codebase and infrastructure.  
 CryptoScanner detects **libraries, keystore files, key management activity, and hardcoded secrets**, presenting results in an interactive web dashboard with **live scanning capabilities**.
 
-> **🚀 Latest Update**: Now featuring a **built-in web server** with real-time scanning! Start scans directly from the dashboard and monitor progress live. Plus enhanced regex optimization, improved error handling, and comprehensive testing!
+> **🚀 Latest Update**: **CycloneDX 1.6 CBOM generation** with IBM CBOMKit compatibility! Generate standards-compliant Cryptography Bill of Materials with intelligent algorithm extraction. Results are always saved in the scanned project directory.
 
 ---
 
@@ -130,6 +130,28 @@ cargo run --release -- --path ./my_project --skip-secrets
 cargo run --release --features server -- --serve --port 8080 --web-dir ./custom-web
 ```
 
+### 📜 CBOM Generation (CycloneDX 1.6)
+
+Generate a **CycloneDX 1.6** compliant Cryptography Bill of Materials (CBOM), compatible with **[IBM CBOMKit](https://github.com/IBM/cbomkit)**:
+
+```bash
+# Generate JSON CBOM (saved in /path/to/project/cbom.json)
+cargo run --release -- --path /path/to/project --cbom --app-name "MyApp"
+
+# Generate XML CBOM (saved in /path/to/project/cbom.xml)
+cargo run --release -- --path /path/to/project --cbom --cbom-format xml --cbom-output cbom.xml --app-name "MyApp"
+
+# Custom output filename (saved in /path/to/project/crypto-report.json)
+cargo run --release -- --path /path/to/project --cbom --cbom-output crypto-report.json --app-name "MyApp"
+```
+
+> **Note**: All result files (`findings.json` and CBOM) are always saved in the scanned project directory. The `--cbom-output` flag controls the filename only. The `findings.json` produced by default scans is CryptoScanner's internal format — use `--cbom` to generate a standards-compliant CBOM for import into CBOMKit or other CycloneDX-compatible tools.
+
+**Detected asset types:**
+- **Algorithms** — AES, RSA, SHA-256, HMAC, ECDSA, etc. with primitive, mode, and key size metadata
+- **Certificates** — `.pem`, `.crt`, `.cer`, `.der` files
+- **Related Crypto Material** — Keystores (`.p12`, `.jks`, `.pfx`), private keys (`.key`)
+
 ### What gets scanned:
 
 **📁 Supported File Types:**
@@ -236,11 +258,13 @@ crypto-scanner/
 │   │   ├── artefacts.rs     # Keystore + CLI command discovery
 │   │   ├── binary.rs        # Binary file analysis
 │   │   └── network.rs       # Network-related scanning
-│   └── utils/
-│       ├── file_utils.rs    # File handling utilities
-│       ├── report.rs        # JSON report generation
-│       ├── lang_ident.rs    # Language identification
-│       └── mod.rs           # Utilities module
+│   ├── utils/
+│   │   ├── file_utils.rs    # File handling utilities
+│   │   ├── report.rs        # JSON report generation
+│   │   ├── lang_ident.rs    # Language identification
+│   │   └── mod.rs           # Utilities module
+│   └── cbom/
+│       └── mod.rs           # CycloneDX 1.6 CBOM generator
 ├── web/
 │   ├── index.html           # Dashboard entry with scan initiation
 │   ├── css/styles.css       # Professional dashboard styling
@@ -339,6 +363,10 @@ Options:
       --serve                    Start web server mode
       --port <PORT>              Web server port [default: 8080]
       --web-dir <WEB_DIR>        Web assets directory [default: ./web]
+      --cbom                     Generate CycloneDX CBOM
+      --cbom-format <FORMAT>     CBOM output format: json, xml [default: json]
+      --cbom-output <FILENAME>   CBOM output filename (saved in scan target dir) [default: cbom.json]
+      --app-name <NAME>          Application name for CBOM metadata
   -h, --help                     Print help
   -V, --version                  Print version
 ```
@@ -391,9 +419,10 @@ cargo test -- --nocapture
 ```
 
 ### Test Coverage
-- **11 passing tests** covering core functionality
-- **Unit tests** for secret detection, comment filtering, language detection
+- **22 passing tests** (14 unit + 8 integration) covering core functionality
+- **Unit tests** for secret detection, comment filtering, language detection, and CBOM generation
 - **Integration tests** with temporary files and real scanning scenarios
+- **CBOM tests** for CycloneDX 1.6 compliance and asset type mapping
 - **Performance tests** for large file handling
 - **Safety tests** for regex edge cases
 
@@ -432,13 +461,17 @@ cargo run --release -- --path ./src --skip-secrets --use-mime-filter
 ## ✅ TODO / Roadmap
 
 ### **Recently Completed ✅**
+- [x] **CycloneDX 1.6 CBOM generation** with IBM CBOMKit compatibility
+- [x] **Three asset types**: algorithms, certificates, and related crypto material
+- [x] **Intelligent algorithm extraction** from code context (OpenSSL, Java, Bouncy Castle)
 - [x] **Built-in web server** with real-time scanning capabilities
 - [x] **Interactive dashboard** with live progress tracking
 - [x] **REST API** for programmatic scan management
 - [x] **Professional UI** with dark/light themes
 - [x] **Performance optimization** with lazy regex compilation
 - [x] **Enhanced error handling** and logging
-- [x] **Comprehensive test suite** (11 tests)
+- [x] **Comprehensive test suite** (22 tests)
+- [x] **Results saved in target project directory** (findings.json + CBOM)
 - [x] **CLI argument improvements** (removed conflicts)
 - [x] **Advanced language detection** (40+ languages)
 - [x] **False positive reduction** (context-aware filtering)

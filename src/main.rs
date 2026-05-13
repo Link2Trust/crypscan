@@ -142,10 +142,23 @@ fn generate_cbom_report(config: &Config) -> Result<(), Box<dyn std::error::Error
         }
     };
     
-    // Write CBOM to file
-    fs::write(&config.cbom_output, output_content)?;
+    // Resolve output path: always save in the target application path
+    let scan_path = std::path::Path::new(&config.path);
+    let cbom_filename = std::path::Path::new(&config.cbom_output)
+        .file_name()
+        .unwrap_or(std::ffi::OsStr::new("cbom.json"));
+    let output_path = if scan_path.is_dir() {
+        scan_path.join(cbom_filename)
+    } else {
+        scan_path.parent()
+            .unwrap_or(std::path::Path::new("."))
+            .join(cbom_filename)
+    };
     
-    info!("CBOM report generated successfully: {}", config.cbom_output);
+    // Write CBOM to file
+    fs::write(&output_path, output_content)?;
+    
+    info!("CBOM report generated successfully: {}", output_path.display());
     info!("Format: {}", config.cbom_format);
     
     if let Some(app_name) = &config.app_name {

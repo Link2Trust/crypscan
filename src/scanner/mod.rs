@@ -94,7 +94,7 @@ pub fn scan_directory(config: &Config) -> io::Result<()> {
     let findings = scan_entries_parallel(entries, config, &pb);
     
     pb.finish_with_message("✅ Scan complete");
-    write_findings_to_output(&findings)?;
+    write_findings_to_output(&findings, &config.path)?;
     
     Ok(())
 }
@@ -186,15 +186,24 @@ fn collect_findings_from_scanners(path: &Path, config: &Config) -> Vec<Finding> 
 }
 
 /// Write findings to the output file
-fn write_findings_to_output(findings: &[Finding]) -> io::Result<()> {
-    let output_path = "web/data/findings.json";
-    
-    if let Some(parent) = Path::new(output_path).parent() {
+fn write_findings_to_output(findings: &[Finding], scan_path: &str) -> io::Result<()> {
+    // Always write to web/data for the dashboard
+    let dashboard_path = "web/data/findings.json";
+    if let Some(parent) = Path::new(dashboard_path).parent() {
         fs::create_dir_all(parent)?;
     }
+    write_report_to_json(findings, dashboard_path)?;
+    println!("✅ Findings written to {}", dashboard_path);
 
-    write_report_to_json(findings, output_path)?;
-    println!("✅ Findings written to {}", output_path);
+    // Also save in the target application path
+    let target_dir = Path::new(scan_path);
+    let target_path = if target_dir.is_dir() {
+        target_dir.join("findings.json")
+    } else {
+        target_dir.parent().unwrap_or(Path::new(".")).join("findings.json")
+    };
+    write_report_to_json(findings, &target_path)?;
+    println!("✅ Findings written to {}", target_path.display());
     
     Ok(())
 }

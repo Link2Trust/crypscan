@@ -1,262 +1,720 @@
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.6",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:185c0f91-fc14-4371-beca-16f5eb178fc0",
   "version": 1,
-  "serialNumber": "urn:uuid:0703e014-0c56-42b9-afe5-f4221ad6bcbf",
   "metadata": {
-    "timestamp": "2025-11-04T07:36:51.626722Z",
-    "tools": [
-      {
-        "vendor": "Link2Trust",
-        "name": "CryptoScanner",
-        "version": "0.1.0",
-        "description": "Cryptographic security analysis tool"
-      }
-    ],
-    "component": {
-      "type": "application",
-      "bomRef": "target-component",
-      "name": "MLDSACert",
-      "version": "unknown",
-      "description": "Application analyzed by CryptoScanner",
-      "cryptoProperties": null
+    "timestamp": "2026-03-16T14:42:16.873501Z",
+    "tools": {
+      "components": [],
+      "services": [
+        {
+          "provider": {
+            "name": "Link2Trust"
+          },
+          "name": "CryptoScanner",
+          "version": "0.1.0"
+        }
+      ]
     }
   },
   "components": [
     {
-      "type": "library",
-      "bomRef": "crypto-lib-62101d43",
-      "name": "cryptography",
-      "version": null,
-      "description": "Cryptographic library detected in /Users/GitHub/Link2Trust/mldsa-cert/mldsa_cert.py",
-      "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
+      "type": "cryptographic-asset",
+      "bom-ref": "0e8a2ddb-3fba-46c0-85e7-dae30b1cccf8",
+      "name": "java.security",
+      "evidence": {
+        "occurrences": [
           {
-            "primitive": "hash",
-            "algorithmName": "SHA-256",
-            "keyLength": null,
-            "cryptographicStrength": 256,
-            "quantumSafe": false,
-            "classicalSecurityLevel": 256,
-            "nistSecurityLevel": 5,
-            "parameterSetIdentifier": null
-          }
-        ],
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": null,
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "library",
-      "bomRef": "crypto-lib-4c08316c",
-      "name": "openssl",
-      "version": "0.10",
-      "description": "Cryptographic library detected in /Users/GitHub/Link2Trust/mldsa-cert/mldsa_cert.py",
-      "cryptoProperties": {
-        "assetType": "algorithm",
-        "algorithmProperties": [
-          {
-            "primitive": "symmetric-encryption",
-            "algorithmName": "AES",
-            "keyLength": 256,
-            "cryptographicStrength": 256,
-            "quantumSafe": false,
-            "classicalSecurityLevel": 256,
-            "nistSecurityLevel": 5,
-            "parameterSetIdentifier": null
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/security/CertificateValidationServiceTest.java",
+            "line": 9,
+            "additionalContext": "import java.security.cert.CertificateExpiredException;"
           },
           {
-            "primitive": "digital-signature",
-            "algorithmName": "RSA",
-            "keyLength": 2048,
-            "cryptographicStrength": 112,
-            "quantumSafe": false,
-            "classicalSecurityLevel": 112,
-            "nistSecurityLevel": 3,
-            "parameterSetIdentifier": null
-          }
-        ],
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": null,
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-beb7a6b2",
-      "name": "demo-ca.key",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo-ca.key",
-      "cryptoProperties": {
-        "assetType": "key",
-        "algorithmProperties": null,
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": [
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/security/CertificateValidationServiceTest.java",
+            "line": 10,
+            "additionalContext": "import java.security.cert.CertificateNotYetValidException;"
+          },
           {
-            "type": "private-key",
-            "id": "keystore-beb7a6b2",
-            "state": "unknown",
-            "algorithmRef": null,
-            "creationTime": null,
-            "activationTime": null,
-            "updateTime": null,
-            "expirationTime": null
-          }
-        ],
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-4eed8081",
-      "name": "test.crt",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/test.crt",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "algorithmProperties": null,
-        "certificateProperties": {
-          "subjectName": null,
-          "issuerName": null,
-          "notValidBefore": null,
-          "notValidAfter": null,
-          "signatureAlgorithmRef": null,
-          "subjectPublicKeyAlgorithmRef": null,
-          "certificateFormat": "X.509",
-          "certificateExtension": null
-        },
-        "relatedCryptoMaterialProperties": null,
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-ed9835ee",
-      "name": "demo.key",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo.key",
-      "cryptoProperties": {
-        "assetType": "key",
-        "algorithmProperties": null,
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": [
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/security/CertificateValidationServiceTest.java",
+            "line": 11,
+            "additionalContext": "import java.security.cert.X509Certificate;"
+          },
           {
-            "type": "private-key",
-            "id": "keystore-ed9835ee",
-            "state": "unknown",
-            "algorithmRef": null,
-            "creationTime": null,
-            "activationTime": null,
-            "updateTime": null,
-            "expirationTime": null
-          }
-        ],
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-3f072dfd",
-      "name": "test.key",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/test.key",
-      "cryptoProperties": {
-        "assetType": "key",
-        "algorithmProperties": null,
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": [
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite1IntegrationTest.java",
+            "line": 17,
+            "additionalContext": "import java.security.*;"
+          },
           {
-            "type": "private-key",
-            "id": "keystore-3f072dfd",
-            "state": "unknown",
-            "algorithmRef": null,
-            "creationTime": null,
-            "activationTime": null,
-            "updateTime": null,
-            "expirationTime": null
-          }
-        ],
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-cbb23cab",
-      "name": "demo-ca.crt",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo-ca.crt",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "algorithmProperties": null,
-        "certificateProperties": {
-          "subjectName": null,
-          "issuerName": null,
-          "notValidBefore": null,
-          "notValidAfter": null,
-          "signatureAlgorithmRef": null,
-          "subjectPublicKeyAlgorithmRef": null,
-          "certificateFormat": "X.509",
-          "certificateExtension": null
-        },
-        "relatedCryptoMaterialProperties": null,
-        "protocolProperties": null
-      }
-    },
-    {
-      "type": "file",
-      "bomRef": "keystore-956ea721",
-      "name": "webserver.key",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/webserver.key",
-      "cryptoProperties": {
-        "assetType": "key",
-        "algorithmProperties": null,
-        "certificateProperties": null,
-        "relatedCryptoMaterialProperties": [
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite1IntegrationTest.java",
+            "line": 18,
+            "additionalContext": "import java.security.spec.X509EncodedKeySpec;"
+          },
           {
-            "type": "private-key",
-            "id": "keystore-956ea721",
-            "state": "unknown",
-            "algorithmRef": null,
-            "creationTime": null,
-            "activationTime": null,
-            "updateTime": null,
-            "expirationTime": null
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite0IntegrationTest.java",
+            "line": 17,
+            "additionalContext": "import java.security.KeyPair;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite0IntegrationTest.java",
+            "line": 18,
+            "additionalContext": "import java.security.KeyPairGenerator;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite0IntegrationTest.java",
+            "line": 19,
+            "additionalContext": "import java.security.spec.ECGenParameterSpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/config/HsmConfig.java",
+            "line": 15,
+            "additionalContext": "import java.security.PublicKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/security/CertificateValidationService.java",
+            "line": 10,
+            "additionalContext": "import java.security.cert.CertificateExpiredException;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/security/CertificateValidationService.java",
+            "line": 11,
+            "additionalContext": "import java.security.cert.CertificateNotYetValidException;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/security/CertificateValidationService.java",
+            "line": 12,
+            "additionalContext": "import java.security.cert.X509Certificate;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/dlms/DlmsSecurityService.java",
+            "line": 9,
+            "additionalContext": "import java.security.*;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/dlms/DlmsSecurityService.java",
+            "line": 10,
+            "additionalContext": "import java.security.spec.X509EncodedKeySpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/UtimacoHsmProvider.java",
+            "line": 9,
+            "additionalContext": "import java.security.PublicKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/UtimacoHsmProvider.java",
+            "line": 10,
+            "additionalContext": "import java.security.KeyFactory;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/UtimacoHsmProvider.java",
+            "line": 11,
+            "additionalContext": "import java.security.spec.X509EncodedKeySpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 8,
+            "additionalContext": "import java.security.PublicKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 9,
+            "additionalContext": "import java.security.PrivateKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 10,
+            "additionalContext": "import java.security.Provider;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 11,
+            "additionalContext": "import java.security.Security;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 12,
+            "additionalContext": "import java.security.KeyStore;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 13,
+            "additionalContext": "import java.security.KeyPair;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 14,
+            "additionalContext": "import java.security.KeyPairGenerator;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 15,
+            "additionalContext": "import java.security.Signature;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 16,
+            "additionalContext": "import java.security.cert.Certificate;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 17,
+            "additionalContext": "import java.security.cert.X509Certificate;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 18,
+            "additionalContext": "import java.security.spec.ECGenParameterSpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 19,
+            "additionalContext": "import java.security.spec.DSAGenParameterSpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 223,
+            "additionalContext": "            } catch (java.security.KeyStoreException e) {"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 352,
+            "additionalContext": "                java.security.cert.Certificate cert = "
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 709,
+            "additionalContext": "            java.security.Key keyToWrap;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 775,
+            "additionalContext": "            java.security.Key unwrappedKey = cipher.unwrap(wrappedKeyBytes, javaKeyAlgorithm, wrappedKeyType);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/HsmProvider.java",
+            "line": 3,
+            "additionalContext": "import java.security.KeyPair;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/HsmProvider.java",
+            "line": 4,
+            "additionalContext": "import java.security.PrivateKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/HsmProvider.java",
+            "line": 5,
+            "additionalContext": "import java.security.PublicKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 23,
+            "additionalContext": "import java.security.SecureRandom;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 296,
+            "additionalContext": "            java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance(\"EC\");"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 297,
+            "additionalContext": "            java.security.spec.X509EncodedKeySpec keySpec = "
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 298,
+            "additionalContext": "                new java.security.spec.X509EncodedKeySpec(peerPublicKeyBytes);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 299,
+            "additionalContext": "            java.security.PublicKey peerPublicKey = keyFactory.generatePublic(keySpec);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 339,
+            "additionalContext": "            java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance(\"DH\");"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 340,
+            "additionalContext": "            java.security.spec.X509EncodedKeySpec keySpec = "
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 341,
+            "additionalContext": "                new java.security.spec.X509EncodedKeySpec(peerPublicKeyBytes);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/api/CryptoController.java",
+            "line": 342,
+            "additionalContext": "            java.security.PublicKey peerPublicKey = keyFactory.generatePublic(keySpec);"
           }
-        ],
-        "protocolProperties": null
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
       }
     },
     {
-      "type": "file",
-      "bomRef": "keystore-78c1bdb6",
-      "name": "demo.crt",
-      "version": null,
-      "description": "Cryptographic keystore file: /Users/GitHub/Link2Trust/mldsa-cert/demo.crt",
+      "type": "cryptographic-asset",
+      "bom-ref": "bdde5a8f-6cd1-4596-9270-212055cc5b89",
+      "name": "ssl",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 255,
+            "additionalContext": "  ssl:"
+          }
+        ]
+      },
       "cryptoProperties": {
-        "assetType": "certificate",
-        "algorithmProperties": null,
-        "certificateProperties": {
-          "subjectName": null,
-          "issuerName": null,
-          "notValidBefore": null,
-          "notValidAfter": null,
-          "signatureAlgorithmRef": null,
-          "subjectPublicKeyAlgorithmRef": null,
-          "certificateFormat": "X.509",
-          "certificateExtension": null
-        },
-        "relatedCryptoMaterialProperties": null,
-        "protocolProperties": null
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "1bd49008-76f8-47bc-9177-b74beab5b945",
+      "name": "openssl",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 45,
+            "additionalContext": "openssl genrsa -out ca-key.pem 4096"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 47,
+            "additionalContext": "openssl req -new -x509 -days $VALIDITY_DAYS -key ca-key.pem -out ca-cert.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 57,
+            "additionalContext": "openssl genrsa -out server-key.pem 2048"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 59,
+            "additionalContext": "openssl req -new -key server-key.pem -out server.csr \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 75,
+            "additionalContext": "openssl x509 -req -in server.csr -CA ca-cert.pem -CAkey ca-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 88,
+            "additionalContext": "openssl genrsa -out client-admin-key.pem 2048"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 89,
+            "additionalContext": "openssl req -new -key client-admin-key.pem -out client-admin.csr \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 92,
+            "additionalContext": "openssl x509 -req -in client-admin.csr -CA ca-cert.pem -CAkey ca-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 100,
+            "additionalContext": "openssl genrsa -out client-operator-key.pem 2048"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 101,
+            "additionalContext": "openssl req -new -key client-operator-key.pem -out client-operator.csr \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 104,
+            "additionalContext": "openssl x509 -req -in client-operator.csr -CA ca-cert.pem -CAkey ca-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 112,
+            "additionalContext": "openssl genrsa -out client-auditor-key.pem 2048"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 113,
+            "additionalContext": "openssl req -new -key client-auditor-key.pem -out client-auditor.csr \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 116,
+            "additionalContext": "openssl x509 -req -in client-auditor.csr -CA ca-cert.pem -CAkey ca-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 124,
+            "additionalContext": "openssl genrsa -out client-crypto-key.pem 2048"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 125,
+            "additionalContext": "openssl req -new -key client-crypto-key.pem -out client-crypto.csr \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 128,
+            "additionalContext": "openssl x509 -req -in client-crypto.csr -CA ca-cert.pem -CAkey ca-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 140,
+            "additionalContext": "openssl pkcs12 -export -in server-cert.pem -inkey server-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 154,
+            "additionalContext": "openssl pkcs12 -export -nokeys -in ca-cert.pem -out truststore.p12 \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 165,
+            "additionalContext": "openssl pkcs12 -export -in client-admin-cert.pem -inkey client-admin-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 170,
+            "additionalContext": "openssl pkcs12 -export -in client-operator-cert.pem -inkey client-operator-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 175,
+            "additionalContext": "openssl pkcs12 -export -in client-auditor-cert.pem -inkey client-auditor-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 180,
+            "additionalContext": "openssl pkcs12 -export -in client-crypto-cert.pem -inkey client-crypto-key.pem \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 303,
+            "additionalContext": "openssl x509 -in ca-cert.pem -text -noout > /dev/null && echo \"    ✓ CA cert valid\""
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 306,
+            "additionalContext": "openssl verify -CAfile ca-cert.pem server-cert.pem"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 309,
+            "additionalContext": "openssl verify -CAfile ca-cert.pem client-admin-cert.pem"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 310,
+            "additionalContext": "openssl verify -CAfile ca-cert.pem client-operator-cert.pem"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 311,
+            "additionalContext": "openssl verify -CAfile ca-cert.pem client-auditor-cert.pem"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 312,
+            "additionalContext": "openssl verify -CAfile ca-cert.pem client-crypto-cert.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "29462c4f-584f-46a2-a87b-3a93f4e92380",
+      "name": "crypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 233,
+            "additionalContext": "  https://localhost:8443/api/v1/crypto/encrypt \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/generate-certs.sh",
+            "line": 243,
+            "additionalContext": "  https://localhost:8443/api/v1/crypto/encrypt \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-dlms-flow.sh",
+            "line": 43,
+            "additionalContext": "curl -X POST http://localhost:8081/api/v1/crypto/encrypt \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-crypto-api.sh",
+            "line": 40,
+            "additionalContext": "ENCRYPT_RESPONSE=$(curl -s -X POST \"$API_BASE/crypto/encrypt\" \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-crypto-api.sh",
+            "line": 60,
+            "additionalContext": "DECRYPT_RESPONSE=$(curl -s -X POST \"$API_BASE/crypto/decrypt\" \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-crypto-api.sh",
+            "line": 106,
+            "additionalContext": "SIGN_RESPONSE=$(curl -s -X POST \"$API_BASE/crypto/sign\" \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-crypto-api.sh",
+            "line": 123,
+            "additionalContext": "VERIFY_RESPONSE=$(curl -s -X POST \"$API_BASE/crypto/verify\" \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/test-crypto-api.sh",
+            "line": 149,
+            "additionalContext": "MAC_RESPONSE=$(curl -s -X POST \"$API_BASE/crypto/mac\" \\"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/config/SecurityConfig.java",
+            "line": 62,
+            "additionalContext": "                .requestMatchers(\"/api/v1/crypto/**\").hasAnyRole(ROLE_CRYPTO_USER, ROLE_OPERATOR, ROLE_ADMIN)"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "e8cf31c5-9670-4aeb-a094-123a9164f39f",
+      "name": "javax.crypto",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/test/java/com/link2trust/dlms/hsm/integration/DlmsSecuritySuite1IntegrationTest.java",
+            "line": 15,
+            "additionalContext": "import javax.crypto.KeyAgreement;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 22,
+            "additionalContext": "import javax.crypto.spec.DHParameterSpec;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 25,
+            "additionalContext": "import javax.crypto.KeyAgreement;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 26,
+            "additionalContext": "import javax.crypto.KeyGenerator;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 27,
+            "additionalContext": "import javax.crypto.SecretKey;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 397,
+            "additionalContext": "            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(algorithm, pkcs11Provider);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 402,
+            "additionalContext": "                javax.crypto.spec.GCMParameterSpec gcmSpec = "
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 403,
+            "additionalContext": "                    new javax.crypto.spec.GCMParameterSpec(tagLength, iv);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 404,
+            "additionalContext": "                cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, key, gcmSpec);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 412,
+            "additionalContext": "                javax.crypto.spec.IvParameterSpec ivSpec = new javax.crypto.spec.IvParameterSpec(iv);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 413,
+            "additionalContext": "                cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, key, ivSpec);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 451,
+            "additionalContext": "            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(algorithm, pkcs11Provider);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 456,
+            "additionalContext": "                javax.crypto.spec.GCMParameterSpec gcmSpec = "
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 457,
+            "additionalContext": "                    new javax.crypto.spec.GCMParameterSpec(tagLength, iv);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 458,
+            "additionalContext": "                cipher.init(javax.crypto.Cipher.DECRYPT_MODE, key, gcmSpec);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 466,
+            "additionalContext": "                javax.crypto.spec.IvParameterSpec ivSpec = new javax.crypto.spec.IvParameterSpec(iv);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 467,
+            "additionalContext": "                cipher.init(javax.crypto.Cipher.DECRYPT_MODE, key, ivSpec);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 478,
+            "additionalContext": "        } catch (javax.crypto.AEADBadTagException e) {"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 589,
+            "additionalContext": "            javax.crypto.Mac mac = javax.crypto.Mac.getInstance(algorithm, pkcs11Provider);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 720,
+            "additionalContext": "            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(algorithm, pkcs11Provider);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 721,
+            "additionalContext": "            cipher.init(javax.crypto.Cipher.WRAP_MODE, wrappingKey);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 758,
+            "additionalContext": "            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(algorithm, pkcs11Provider);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 759,
+            "additionalContext": "            cipher.init(javax.crypto.Cipher.UNWRAP_MODE, unwrappingKey);"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 765,
+            "additionalContext": "                wrappedKeyType = javax.crypto.Cipher.SECRET_KEY;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 768,
+            "additionalContext": "                wrappedKeyType = javax.crypto.Cipher.PRIVATE_KEY;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/HsmProvider.java",
+            "line": 6,
+            "additionalContext": "import javax.crypto.SecretKey;"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "c1736e45-c4ea-45e9-9f44-76da7726d547",
+      "name": "bouncycastle",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 28,
+            "additionalContext": "import org.bouncycastle.asn1.x500.X500Name;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 29,
+            "additionalContext": "import org.bouncycastle.cert.X509v3CertificateBuilder;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 30,
+            "additionalContext": "import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 31,
+            "additionalContext": "import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 32,
+            "additionalContext": "import org.bouncycastle.operator.ContentSigner;"
+          },
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/src/main/java/com/link2trust/dlms/hsm/hsm/providers/SoftHsmProvider.java",
+            "line": 33,
+            "additionalContext": "import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "c1a822b8-038b-42d5-a9d7-18cf39f3e816",
+      "name": "Password",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "/Users/GitHub/Link2Trust/DLMS-COSEM-HSM-Interface/scripts/setup-database.sh",
+            "line": 36,
+            "additionalContext": "DB_PASSWORD=\"${DB_PASSWORD:-hsm_password}\""
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "cryptoFunctions": []
+        }
       }
     }
-  ],
-  "declarations": {
-    "assessor": "CryptoScanner v0.1.0",
-    "assessmentDate": "2025-11-04T07:36:51.626756Z",
-    "compliance": null,
-    "riskAssessments": null
-  }
+  ]
 }
